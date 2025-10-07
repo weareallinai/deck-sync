@@ -120,8 +120,9 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
       }
     };
 
-    ws.onerror = () => {
-      // Suppress error logging - errors are typically handled in onclose
+    ws.onerror = (error) => {
+      // Suppress error logging for premature close (React Strict Mode)
+      // Errors are typically handled in onclose
       setIsConnected(false);
     };
 
@@ -157,7 +158,12 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
     return () => {
       reconnectManager.current.cancel();
       if (wsRef.current) {
-        wsRef.current.close();
+        // Only close if WebSocket is in OPEN or CONNECTING state
+        const ws = wsRef.current;
+        if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+          ws.close();
+        }
+        wsRef.current = null;
       }
       // Clear pending timeouts
       pendingEvents.current.forEach(timeout => clearTimeout(timeout));
