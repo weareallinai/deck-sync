@@ -8,26 +8,28 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
   const [sessionId, setSessionId] = useState<string>('');
   const [token, setToken] = useState<string | null>(null);
   const [isPreview, setIsPreview] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
+  const [ready, setReady] = useState(false);
   
   useEffect(() => {
     // Extract token after mount to avoid hydration mismatch
     const t = extractViewerToken();
+    console.log('[ViewPage] Token extracted:', t);
     setToken(t);
     setIsPreview(t === 'presenter-preview');
-    setMounted(true);
     
     params.then(p => {
+      console.log('[ViewPage] Session ID resolved:', p.sessionId);
       setSessionId(p.sessionId);
-      setIsLoading(false);
+      setReady(true);
     });
   }, [params]);
 
   // Show consistent loading state during SSR and initial client render
-  if (!mounted || isLoading) {
+  if (!ready) {
     return (
-      <div className="w-full h-full bg-black" style={{ minHeight: '100vh' }} />
+      <div className="w-full h-full bg-black" style={{ minHeight: '100vh' }}>
+        {token && <div className="text-white text-xs p-2">Loading session...</div>}
+      </div>
     );
   }
 
@@ -43,6 +45,8 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
       </div>
     );
   }
+
+  console.log('[ViewPage] Rendering ViewerStage with:', { sessionId, token, isPreview });
 
   // GUARDRAIL: Viewer page imports NO editor dependencies (Konva, etc.)
   return (
