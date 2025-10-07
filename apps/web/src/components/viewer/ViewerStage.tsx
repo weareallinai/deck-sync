@@ -38,6 +38,17 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
   const [lastSeq, setLastSeq] = useState(-1);
   const pendingEvents = useRef<Map<number, NodeJS.Timeout>>(new Map());
   const reconnectManager = useRef(new ReconnectManager());
+  const lastSeqRef = useRef(-1);
+  const clockOffsetRef = useRef(0);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    lastSeqRef.current = lastSeq;
+  }, [lastSeq]);
+
+  useEffect(() => {
+    clockOffsetRef.current = clockOffset;
+  }, [clockOffset]);
 
   const connectWebSocket = useCallback(async () => {
     const wsUrl = process.env.NEXT_PUBLIC_WS_BASE || 'ws://localhost:8787';
@@ -60,7 +71,7 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
       }));
 
       // Request snapshot if we've seen events before (reconnect)
-      if (lastSeq >= 0) {
+      if (lastSeqRef.current >= 0) {
         console.log('[Viewer] Requesting snapshot after reconnect');
         ws.send(JSON.stringify({ t: 'REQUEST_SNAPSHOT' }));
       }
@@ -88,8 +99,8 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
           addEvent(`STATE received: step ${message.step}, slide ${message.slideId}, seq ${message.seq}`);
         } else if (message.t === 'EVT') {
           // Check for sequence gap
-          if (lastSeq >= 0 && message.seq > lastSeq + 1) {
-            console.warn(`[Viewer] Sequence gap detected: expected ${lastSeq + 1}, got ${message.seq}`);
+          if (lastSeqRef.current >= 0 && message.seq > lastSeqRef.current + 1) {
+            console.warn(`[Viewer] Sequence gap detected: expected ${lastSeqRef.current + 1}, got ${message.seq}`);
             addEvent(`⚠️ Sequence gap - requesting snapshot`);
             ws.send(JSON.stringify({ t: 'REQUEST_SNAPSHOT' }));
           }
@@ -97,7 +108,7 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
           setLastSeq(message.seq);
           
           // Event from coordinator with applyAt timestamp
-          const latency = Date.now() - (message.applyAt - clockOffset);
+          const latency = Date.now() - (message.applyAt - clockOffsetRef.current);
           addEvent(`EVT: ${message.cmd} (seq=${message.seq}, latency=${latency.toFixed(0)}ms)`);
           
           // Schedule event at applyAt + offset
@@ -130,7 +141,7 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
     };
 
     wsRef.current = ws;
-  }, [sessionId, token, lastSeq, clockOffset]);
+  }, [sessionId, token]);
 
   useEffect(() => {
     connectWebSocket();
@@ -192,7 +203,7 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
   const scheduleEvent = (message: any) => {
     // Calculate when to apply this event
     const now = Date.now();
-    const applyAt = message.applyAt + clockOffset;
+    const applyAt = message.applyAt + clockOffsetRef.current;
     const delay = Math.max(0, applyAt - now);
     
     console.log(`[Viewer] Scheduling ${message.cmd} in ${delay}ms (applyAt=${applyAt}, now=${now})`);
