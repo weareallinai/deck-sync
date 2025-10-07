@@ -317,13 +317,14 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
         {/* Connection indicator overlay */}
         {!isPreview && (
           <div className="absolute top-4 right-4 z-50">
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${isConnected ? 'bg-green-500' : reconnectAttempts > 0 ? 'bg-yellow-500' : 'bg-red-500'}`}>
-            <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-white animate-pulse' : 'bg-white'}`} />
-            <span className="text-white text-xs font-medium">
-              {isConnected ? 'Live' : reconnectAttempts > 0 ? `Reconnecting... (${reconnectAttempts})` : 'Disconnected'}
-            </span>
+            <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${isConnected ? 'bg-green-500' : reconnectAttempts > 0 ? 'bg-yellow-500' : 'bg-red-500'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-white animate-pulse' : 'bg-white'}`} />
+              <span className="text-white text-xs font-medium">
+                {isConnected ? 'Live' : reconnectAttempts > 0 ? `Reconnecting... (${reconnectAttempts})` : 'Disconnected'}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Debug toggle */}
         {!isPreview && (
