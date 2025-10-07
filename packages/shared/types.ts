@@ -82,11 +82,11 @@ export type Stroke = {
 };
 
 export type Animation = {
-  kind: 'fade' | 'move' | 'scale' | 'dissolve';
-  durationMs: number;
-  delayMs?: number;
-  easing?: string;
-  order: number;
+  type: 'fade' | 'slide-up' | 'slide-down' | 'slide-left' | 'slide-right' | 'zoom' | 'bounce';
+  trigger: 'on-step' | 'on-load';
+  duration: number; // in seconds
+  delay: number; // in seconds
+  easing?: 'linear' | 'ease' | 'ease-in' | 'ease-out' | 'ease-in-out';
 };
 
 export type Transition = {
