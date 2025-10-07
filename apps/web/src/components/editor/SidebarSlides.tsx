@@ -43,8 +43,8 @@ export function SidebarSlides() {
   return (
     <div className="h-full flex flex-col bg-gray-50">
       <div className="p-4 border-b bg-white">
-        <h2 className="font-semibold text-sm text-gray-700">Slides</h2>
-        <p className="text-xs text-gray-500 mt-1">
+        <h2 className="font-semibold text-sm text-gray-900 dark:text-gray-900">Slides</h2>
+        <p className="text-xs text-gray-600 dark:text-gray-600 mt-1">
           {deck.slides.length} slide{deck.slides.length !== 1 ? 's' : ''}
         </p>
       </div>

@@ -17,8 +17,8 @@ export function AnimationsPanel() {
   if (!selectedElement || !currentSlideId || !selectedElementId) {
     return (
       <div className="p-4 border-t bg-gray-50">
-        <h3 className="font-semibold mb-2 text-sm text-gray-700">Animations</h3>
-        <div className="text-xs text-gray-600">
+        <h3 className="font-semibold mb-2 text-sm text-gray-900 dark:text-gray-900">Animations</h3>
+        <div className="text-xs text-gray-700 dark:text-gray-700">
           Select an element to add animations
         </div>
       </div>
@@ -83,7 +83,7 @@ export function AnimationsPanel() {
   return (
     <div className="p-4 border-t bg-gray-50">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-sm text-gray-700">Animations</h3>
+        <h3 className="font-semibold text-sm text-gray-900 dark:text-gray-900">Animations</h3>
         <Button
           size="sm"
           variant="ghost"
@@ -95,14 +95,14 @@ export function AnimationsPanel() {
       </div>
 
       {animations.length === 0 && !isAddingAnimation && (
-        <div className="text-xs text-gray-600 italic mb-3">
+        <div className="text-xs text-gray-700 dark:text-gray-700 italic mb-3">
           No animations • Click "Add" to create one
         </div>
       )}
 
       {isAddingAnimation && (
         <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded">
-          <div className="text-xs text-blue-700 mb-2">
+          <div className="text-xs text-blue-800 dark:text-blue-800 mb-2">
             Add animation to this element?
           </div>
           <div className="flex gap-1">
@@ -139,7 +139,7 @@ export function AnimationsPanel() {
       ))}
 
       {animations.length > 0 && (
-        <div className="mt-3 pt-3 border-t text-xs text-gray-600 italic">
+        <div className="mt-3 pt-3 border-t text-xs text-gray-700 dark:text-gray-700 italic">
           💡 Animations play in order (top to bottom)
         </div>
       )}
@@ -175,7 +175,7 @@ function AnimationItem({
       <div className="flex items-center justify-between p-2 bg-gray-50">
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex-1 text-left text-xs font-medium text-gray-700"
+          className="flex-1 text-left text-xs font-medium text-gray-900 dark:text-gray-900"
         >
           {isExpanded ? '▼' : '▶'} {animation.type} ({animation.trigger})
         </button>
@@ -211,12 +211,12 @@ function AnimationItem({
         <div className="p-2 space-y-2">
           {/* Animation Type */}
           <div>
-            <label className="text-xs text-gray-700 font-medium block mb-1">Type</label>
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium block mb-1">Type</label>
             <select
               value={animation.type}
               onChange={(e) => onUpdate({ type: e.target.value as Animation['type'] })}
               onBlur={onBlur}
-              className="w-full px-2 py-1 text-xs border rounded"
+              className="w-full px-2 py-1 text-xs text-gray-900 dark:text-gray-900 border rounded bg-white"
             >
               <option value="fade">Fade In</option>
               <option value="slide-up">Slide Up</option>
@@ -230,12 +230,12 @@ function AnimationItem({
 
           {/* Trigger */}
           <div>
-            <label className="text-xs text-gray-700 font-medium block mb-1">Trigger</label>
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium block mb-1">Trigger</label>
             <select
               value={animation.trigger}
               onChange={(e) => onUpdate({ trigger: e.target.value as Animation['trigger'] })}
               onBlur={onBlur}
-              className="w-full px-2 py-1 text-xs border rounded"
+              className="w-full px-2 py-1 text-xs text-gray-900 dark:text-gray-900 border rounded bg-white"
             >
               <option value="on-step">On Step</option>
               <option value="on-load">On Slide Load</option>
@@ -244,7 +244,7 @@ function AnimationItem({
 
           {/* Duration */}
           <div>
-            <label className="text-xs text-gray-700 font-medium block mb-1">
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium block mb-1">
               Duration: {animation.duration}s
             </label>
             <input
@@ -261,7 +261,7 @@ function AnimationItem({
 
           {/* Delay */}
           <div>
-            <label className="text-xs text-gray-700 font-medium block mb-1">
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium block mb-1">
               Delay: {animation.delay}s
             </label>
             <input
@@ -278,12 +278,12 @@ function AnimationItem({
 
           {/* Easing */}
           <div>
-            <label className="text-xs text-gray-700 font-medium block mb-1">Easing</label>
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium block mb-1">Easing</label>
             <select
               value={animation.easing}
               onChange={(e) => onUpdate({ easing: e.target.value as Animation['easing'] })}
               onBlur={onBlur}
-              className="w-full px-2 py-1 text-xs border rounded"
+              className="w-full px-2 py-1 text-xs text-gray-900 dark:text-gray-900 border rounded bg-white"
             >
               <option value="linear">Linear</option>
               <option value="ease">Ease</option>

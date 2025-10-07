@@ -20,7 +20,7 @@ export function Inspector() {
   if (!selectedElement || !currentSlideId || !selectedElementId) {
     return (
       <div className="p-4">
-        <h2 className="font-semibold text-sm text-gray-700 mb-4">Slide Properties</h2>
+        <h2 className="font-semibold text-sm text-gray-900 dark:text-gray-900 mb-4">Slide Properties</h2>
         {currentSlideId && currentSlide ? (
           <SlidePropertiesPanel 
             slideId={currentSlideId}
@@ -29,7 +29,7 @@ export function Inspector() {
             saveHistory={saveHistory}
           />
         ) : (
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-gray-600 dark:text-gray-600">
             No slide selected
           </div>
         )}
@@ -61,54 +61,54 @@ export function Inspector() {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="font-semibold text-sm text-gray-700">Properties</h2>
-        <div className="text-xs text-gray-700 font-medium bg-gray-100 px-2 py-1 rounded">
+        <h2 className="font-semibold text-sm text-gray-900 dark:text-gray-900">Properties</h2>
+        <div className="text-xs text-gray-900 dark:text-gray-900 font-medium bg-gray-100 px-2 py-1 rounded">
           {selectedElement.type}
         </div>
       </div>
 
       {/* Position & Size */}
       <div className="mb-4">
-        <h3 className="text-xs font-semibold text-gray-700 mb-2">Position & Size</h3>
+        <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-900 mb-2">Position & Size</h3>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-gray-700 font-medium">X</label>
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">X</label>
             <input
               type="number"
               value={Math.round(selectedElement.x)}
               onChange={(e) => handleUpdate({ x: Number(e.target.value) })}
               onBlur={() => saveHistory()}
-              className="w-full px-2 py-1 text-sm border rounded"
+              className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-700 font-medium">Y</label>
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Y</label>
             <input
               type="number"
               value={Math.round(selectedElement.y)}
               onChange={(e) => handleUpdate({ y: Number(e.target.value) })}
               onBlur={() => saveHistory()}
-              className="w-full px-2 py-1 text-sm border rounded"
+              className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-700 font-medium">Width</label>
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Width</label>
             <input
               type="number"
               value={Math.round(selectedElement.w)}
               onChange={(e) => handleUpdate({ w: Number(e.target.value) })}
               onBlur={() => saveHistory()}
-              className="w-full px-2 py-1 text-sm border rounded"
+              className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
             />
           </div>
           <div>
-            <label className="text-xs text-gray-700 font-medium">Height</label>
+            <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Height</label>
             <input
               type="number"
               value={Math.round(selectedElement.h)}
               onChange={(e) => handleUpdate({ h: Number(e.target.value) })}
               onBlur={() => saveHistory()}
-              className="w-full px-2 py-1 text-sm border rounded"
+              className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
             />
           </div>
         </div>
@@ -117,24 +117,24 @@ export function Inspector() {
       {/* Type-specific properties */}
       {selectedElement.type === 'text' && (
         <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-700 mb-2">Text</h3>
+          <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-900 mb-2">Text</h3>
           <div className="space-y-2">
             <div>
-              <label className="text-xs text-gray-700 font-medium">Content</label>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Content</label>
               <textarea
                 value={selectedElement.content}
                 onChange={(e) => handleUpdate({ content: e.target.value })}
                 onBlur={() => saveHistory()}
-                className="w-full px-2 py-1 text-sm border rounded"
+                className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
                 rows={3}
               />
             </div>
             <div>
-              <label className="text-xs text-gray-700 font-medium">Font Family</label>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Font Family</label>
               <select
                 value={selectedElement.style.fontFamily || 'Arial'}
                 onChange={(e) => handleUpdateAndSave({ style: { ...selectedElement.style, fontFamily: e.target.value } })}
-                className="w-full px-2 py-1 text-sm border rounded"
+                className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
               >
                 <option value="Arial">Arial</option>
                 <option value="Helvetica">Helvetica</option>
@@ -148,17 +148,17 @@ export function Inspector() {
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-700 font-medium">Font Size</label>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Font Size</label>
               <input
                 type="number"
                 value={selectedElement.style.fontSize || 24}
                 onChange={(e) => handleUpdate({ style: { ...selectedElement.style, fontSize: Number(e.target.value) } })}
                 onBlur={() => saveHistory()}
-                className="w-full px-2 py-1 text-sm border rounded"
+                className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
               />
             </div>
             <div>
-              <label className="text-xs text-gray-700 font-medium">Color</label>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Color</label>
               <input
                 type="color"
                 value={selectedElement.style.color || '#000000'}
@@ -170,12 +170,83 @@ export function Inspector() {
         </div>
       )}
 
-      {selectedElement.type === 'shape' && (
+      {selectedElement.type === 'video' && (
         <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-700 mb-2">Shape</h3>
+          <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-900 mb-2">Video</h3>
           <div className="space-y-2">
             <div>
-              <label className="text-xs text-gray-700 font-medium">Fill Color</label>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Video Type</label>
+              <div className="text-xs text-gray-600 dark:text-gray-600 mt-1">
+                {selectedElement.videoType === 'youtube' && '📺 YouTube'}
+                {selectedElement.videoType === 'vimeo' && '🎬 Vimeo'}
+                {selectedElement.videoType === 'direct' && '🎥 Direct File'}
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Video URL</label>
+              <input
+                type="text"
+                value={selectedElement.src}
+                onChange={(e) => {
+                  const { parseVideoUrl } = require('@/lib/utils/video');
+                  const videoInfo = parseVideoUrl(e.target.value);
+                  updateElement(currentSlideId, selectedElementId, {
+                    src: e.target.value,
+                    videoType: videoInfo.type,
+                    youtubeId: videoInfo.youtubeId,
+                    vimeoId: videoInfo.vimeoId,
+                  });
+                }}
+                onBlur={() => saveHistory()}
+                placeholder="YouTube, Vimeo, or direct MP4 URL"
+                className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="video-loop"
+                checked={selectedElement.loop || false}
+                onChange={(e) => handleUpdateAndSave({ loop: e.target.checked })}
+                className="rounded"
+              />
+              <label htmlFor="video-loop" className="text-xs text-gray-900 dark:text-gray-900 font-medium">
+                Loop video
+              </label>
+            </div>
+            <div>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">
+                Start at (seconds)
+              </label>
+              <input
+                type="number"
+                min="0"
+                value={selectedElement.startAt || 0}
+                onChange={(e) => handleUpdate({ startAt: Number(e.target.value) })}
+                onBlur={() => saveHistory()}
+                className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
+              />
+            </div>
+            {selectedElement.youtubeId && (
+              <div className="text-xs text-gray-600 dark:text-gray-600 bg-blue-50 p-2 rounded">
+                <span className="font-medium">YouTube ID:</span> {selectedElement.youtubeId}
+              </div>
+            )}
+            {selectedElement.vimeoId && (
+              <div className="text-xs text-gray-600 dark:text-gray-600 bg-purple-50 p-2 rounded">
+                <span className="font-medium">Vimeo ID:</span> {selectedElement.vimeoId}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {selectedElement.type === 'shape' && (
+        <div className="mb-4">
+          <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-900 mb-2">Shape</h3>
+          <div className="space-y-2">
+            <div>
+              <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Fill Color</label>
               <input
                 type="color"
                 value={selectedElement.fill || '#cccccc'}
@@ -186,7 +257,7 @@ export function Inspector() {
             {selectedElement.stroke && (
               <>
                 <div>
-                  <label className="text-xs text-gray-700 font-medium">Stroke Color</label>
+                  <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Stroke Color</label>
                   <input
                     type="color"
                     value={selectedElement.stroke.color}
@@ -195,13 +266,13 @@ export function Inspector() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-700 font-medium">Stroke Width</label>
+                  <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Stroke Width</label>
                   <input
                     type="number"
                     value={selectedElement.stroke.width}
                     onChange={(e) => handleUpdate({ stroke: { ...selectedElement.stroke, width: Number(e.target.value) } })}
                     onBlur={() => saveHistory()}
-                    className="w-full px-2 py-1 text-sm border rounded"
+                    className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
                   />
                 </div>
               </>
@@ -212,7 +283,7 @@ export function Inspector() {
 
       {/* Layer control */}
       <div className="mb-4">
-        <h3 className="text-xs font-semibold text-gray-700 mb-2">Layer</h3>
+        <h3 className="text-xs font-semibold text-gray-900 dark:text-gray-900 mb-2">Layer</h3>
         <div className="grid grid-cols-2 gap-1">
           <Button 
             size="sm" 
@@ -332,11 +403,11 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
     <div className="space-y-4">
       {/* Background Type Selector */}
       <div>
-        <label className="text-xs text-gray-700 font-medium mb-2 block">Background Type</label>
+        <label className="text-xs text-gray-900 dark:text-gray-900 font-medium mb-2 block">Background Type</label>
         <select
           value={slide.bg.type}
           onChange={(e) => handleBackgroundTypeChange(e.target.value as 'color' | 'gradient' | 'image')}
-          className="w-full px-2 py-1 text-sm border rounded"
+          className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
         >
           <option value="color">Solid Color</option>
           <option value="gradient">Gradient</option>
@@ -347,41 +418,41 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
       {/* Color Picker (for solid color) */}
       {slide.bg.type === 'color' && (
         <div>
-          <label className="text-xs text-gray-700 font-medium mb-2 block">Background Color</label>
+          <label className="text-xs text-gray-900 dark:text-gray-900 font-medium mb-2 block">Background Color</label>
           <input
             type="color"
             value={slide.bg.value}
             onChange={(e) => handleColorChange(e.target.value)}
             className="w-full h-10 border rounded cursor-pointer"
           />
-          <div className="mt-1 text-xs text-gray-600 font-mono">{slide.bg.value}</div>
+          <div className="mt-1 text-xs text-gray-900 dark:text-gray-900 font-mono">{slide.bg.value}</div>
         </div>
       )}
 
       {/* Gradient Editor (simple two-color gradient) */}
       {slide.bg.type === 'gradient' && (
         <div>
-          <label className="text-xs text-gray-700 font-medium mb-2 block">Gradient</label>
+          <label className="text-xs text-gray-900 dark:text-gray-900 font-medium mb-2 block">Gradient</label>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-700 font-medium">Direction:</span>
+              <span className="text-xs text-gray-900 dark:text-gray-900 font-medium">Direction:</span>
               <select
                 value={slide.bg.value.includes('to bottom') ? 'to bottom' : slide.bg.value.includes('to right') ? 'to right' : 'to bottom'}
                 onChange={(e) => {
                   const colors = slide.bg.value.match(/#[0-9a-fA-F]{6}/g) || ['#3b82f6', '#8b5cf6'];
                   handleGradientChange(`linear-gradient(${e.target.value}, ${colors[0]}, ${colors[1]})`);
                 }}
-                className="flex-1 px-2 py-1 text-xs border rounded"
+                className="flex-1 px-2 py-1 text-xs text-gray-900 dark:text-gray-900 border rounded bg-white"
               >
                 <option value="to bottom">Top to Bottom</option>
                 <option value="to right">Left to Right</option>
                 <option value="to bottom right">Diagonal</option>
               </select>
             </div>
-            <div className="text-xs text-gray-700 font-mono bg-gray-50 p-2 rounded overflow-x-auto border">
+            <div className="text-xs text-gray-900 dark:text-gray-900 font-mono bg-gray-50 p-2 rounded overflow-x-auto border">
               {slide.bg.value}
             </div>
-            <div className="text-xs text-gray-400 italic">
+            <div className="text-xs text-gray-500 dark:text-gray-500 italic">
               💡 Tip: Edit gradient CSS directly in the future
             </div>
           </div>
@@ -391,7 +462,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
       {/* Image URL Input (placeholder for R2 upload) */}
       {slide.bg.type === 'image' && (
         <div>
-          <label className="text-xs text-gray-700 font-medium mb-2 block">Background Image</label>
+          <label className="text-xs text-gray-900 dark:text-gray-900 font-medium mb-2 block">Background Image</label>
           <input
             type="text"
             value={slide.bg.value}
@@ -400,9 +471,9 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
             }}
             onBlur={() => saveHistory()}
             placeholder="Enter image URL"
-            className="w-full px-2 py-1 text-sm border rounded mb-2"
+            className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white mb-2"
           />
-          <div className="text-xs text-gray-400 italic mb-2">
+          <div className="text-xs text-gray-500 dark:text-gray-500 italic mb-2">
             📸 Paste an image URL (drag & drop upload coming soon)
           </div>
           {slide.bg.value && (
@@ -422,7 +493,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
 
       {/* Preview */}
       <div>
-        <label className="text-xs text-gray-700 font-medium mb-2 block">Preview</label>
+        <label className="text-xs text-gray-900 dark:text-gray-900 font-medium mb-2 block">Preview</label>
         <div 
           className="aspect-video rounded border-2 border-gray-300"
           style={{

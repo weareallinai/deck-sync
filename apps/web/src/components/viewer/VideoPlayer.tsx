@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import type { VideoEl } from '@deck/shared';
+import { buildYouTubeEmbedUrl, buildVimeoEmbedUrl } from '@/lib/utils/video';
 
 interface VideoPlayerProps {
   element: VideoEl;
@@ -11,14 +12,17 @@ interface VideoPlayerProps {
 
 export function VideoPlayer({ element, isVisible, onVideoEnd }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
+  // Handle direct video playback
   useEffect(() => {
+    if (element.videoType !== 'direct') return;
+    
     const video = videoRef.current;
     if (!video) return;
 
     // Handle video end event
     const handleEnded = () => {
-      console.log('[VideoPlayer] Video ended');
       if (onVideoEnd) {
         onVideoEnd();
       }
@@ -26,9 +30,11 @@ export function VideoPlayer({ element, isVisible, onVideoEnd }: VideoPlayerProps
 
     video.addEventListener('ended', handleEnded);
     return () => video.removeEventListener('ended', handleEnded);
-  }, [onVideoEnd]);
+  }, [element.videoType, onVideoEnd]);
 
   useEffect(() => {
+    if (element.videoType !== 'direct') return;
+    
     const video = videoRef.current;
     if (!video) return;
 
@@ -42,50 +48,61 @@ export function VideoPlayer({ element, isVisible, onVideoEnd }: VideoPlayerProps
       video.pause();
       video.currentTime = element.startAt || 0;
     }
-  }, [isVisible, element.startAt]);
+  }, [isVisible, element.startAt, element.videoType]);
 
-  // Handle YouTube/Vimeo embeds
-  if (typeof element.src === 'object') {
-    const { youtubeId, vimeoId } = element.src;
+  // Render YouTube embed
+  if (element.videoType === 'youtube' && element.youtubeId) {
+    const embedUrl = buildYouTubeEmbedUrl(
+      element.youtubeId,
+      isVisible,
+      element.startAt || 0
+    );
     
-    if (youtubeId) {
-      const embedUrl = `https://www.youtube.com/embed/${youtubeId}?autoplay=${isVisible ? 1 : 0}&rel=0`;
-      return (
-        <iframe
-          src={embedUrl}
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
-      );
-    }
-    
-    if (vimeoId) {
-      const embedUrl = `https://player.vimeo.com/video/${vimeoId}?autoplay=${isVisible ? 1 : 0}`;
-      return (
-        <iframe
-          src={embedUrl}
-          style={{
-            width: '100%',
-            height: '100%',
-            border: 'none',
-          }}
-          allow="autoplay; fullscreen; picture-in-picture"
-          allowFullScreen
-        />
-      );
-    }
+    return (
+      <iframe
+        ref={iframeRef}
+        src={embedUrl}
+        style={{
+          width: '100%',
+          height: '100%',
+          border: 'none',
+        }}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        title="YouTube video player"
+      />
+    );
   }
 
-  // Native video element for MP4/WebM
+  // Render Vimeo embed
+  if (element.videoType === 'vimeo' && element.vimeoId) {
+    const embedUrl = buildVimeoEmbedUrl(
+      element.vimeoId,
+      isVisible,
+      element.startAt || 0
+    );
+    
+    return (
+      <iframe
+        ref={iframeRef}
+        src={embedUrl}
+        style={{
+          width: '100%',
+          height: '100%',
+          border: 'none',
+        }}
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowFullScreen
+        title="Vimeo video player"
+      />
+    );
+  }
+
+  // Render direct video file (MP4, WebM, etc.)
   return (
     <video
       ref={videoRef}
-      src={element.src as string}
+      src={element.src}
       style={{
         width: '100%',
         height: '100%',
@@ -93,7 +110,7 @@ export function VideoPlayer({ element, isVisible, onVideoEnd }: VideoPlayerProps
       }}
       loop={element.loop}
       playsInline
-      muted={false}
+      muted // Muted for autoplay
     />
   );
 }

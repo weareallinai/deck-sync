@@ -85,17 +85,28 @@ export function Toolbar() {
   const handleAddVideo = () => {
     if (!currentSlideId) return;
     
-    // Placeholder video
+    // Prompt for video URL
+    const url = prompt('Enter video URL (YouTube, Vimeo, or direct MP4 link):');
+    if (!url) return;
+    
+    // Parse video URL to detect type
+    const { parseVideoUrl } = require('@/lib/utils/video');
+    const videoInfo = parseVideoUrl(url);
+    
     const newVideo: VideoEl = {
       id: `video-${Date.now()}`,
       type: 'video',
+      videoType: videoInfo.type,
       x: 250,
       y: 150,
       w: 640,
       h: 360,
       z: 0,
-      src: 'https://example.com/video.mp4',
+      src: url,
+      youtubeId: videoInfo.youtubeId,
+      vimeoId: videoInfo.vimeoId,
       loop: false,
+      autoplay: true,
     };
     
     addElement(currentSlideId, newVideo);
@@ -111,7 +122,7 @@ export function Toolbar() {
     <div className="h-14 border-b bg-white px-4 flex items-center gap-2">
       {/* Deck title */}
       <div className="flex items-center gap-2 mr-4 border-r pr-4">
-        <span className="text-sm font-semibold text-gray-700">
+        <span className="text-sm font-semibold text-gray-900 dark:text-gray-900">
           {deck?.title || 'Untitled Deck'}
         </span>
       </div>
@@ -169,19 +180,19 @@ export function Toolbar() {
             <div className="absolute top-full left-0 mt-1 bg-white border shadow-lg rounded-md py-1 z-50 min-w-[120px]">
               <button
                 onClick={() => handleAddShape('rect')}
-                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-gray-900 dark:text-gray-900"
               >
                 ⬜ Rectangle
               </button>
               <button
                 onClick={() => handleAddShape('ellipse')}
-                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-gray-900 dark:text-gray-900"
               >
                 ⭕ Circle
               </button>
               <button
                 onClick={() => handleAddShape('line')}
-                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm"
+                className="w-full text-left px-3 py-2 hover:bg-gray-100 text-sm text-gray-900 dark:text-gray-900"
               >
                 ➖ Line
               </button>

@@ -61,9 +61,13 @@ export type ImageEl = BaseEl & {
 
 export type VideoEl = BaseEl & {
   type: 'video';
-  src: string | { youtubeId?: string; vimeoId?: string };
+  videoType: 'direct' | 'youtube' | 'vimeo';
+  src: string; // URL for direct video, or full URL for YouTube/Vimeo
+  youtubeId?: string; // Extracted YouTube video ID
+  vimeoId?: string; // Extracted Vimeo video ID
   loop?: boolean;
-  startAt?: number;
+  startAt?: number; // Start time in seconds
+  autoplay?: boolean;
 };
 
 export type TextStyle = {
