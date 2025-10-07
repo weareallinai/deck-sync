@@ -28,8 +28,6 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
         const scaleY = height / 720;
         const newScale = Math.min(scaleX, scaleY);
         
-        console.log('[SlideRenderer] Scale update:', { width, height, scaleX, scaleY, newScale });
-        
         setScale(newScale);
         
         // Calculate centering offset
