@@ -5,9 +5,38 @@ import { Toolbar } from '@/components/editor/Toolbar';
 import { SidebarSlides } from '@/components/editor/SidebarSlides';
 import { Inspector } from '@/components/editor/Inspector';
 import { AnimationsPanel } from '@/components/editor/AnimationsPanel';
+import { useEditorStore } from '@/lib/state/editorStore';
+import { useEffect, useState } from 'react';
+import { mockDeck, mockSlides } from '@/lib/data/mockSlides';
 
 export default function EditorPage({ params }: { params: Promise<{ deckId: string }> }) {
-  // Stub: will load deck data and wire up state
+  const [deckId, setDeckId] = useState<string>('');
+  const [isReady, setIsReady] = useState(false);
+  const setDeck = useEditorStore(state => state.setDeck);
+
+  useEffect(() => {
+    // Resolve params and load deck
+    params.then(p => {
+      setDeckId(p.deckId);
+      
+      // Load mock data for now
+      // TODO: Replace with actual API call
+      setDeck(mockDeck, mockSlides);
+      setIsReady(true);
+    });
+  }, [params, setDeck]);
+
+  if (!isReady) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="text-lg font-semibold text-gray-700">Loading editor...</div>
+          <div className="text-sm text-gray-500 mt-2">Deck ID: {deckId || '...'}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Left sidebar - slides */}
