@@ -299,11 +299,11 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
   const [showDebug, setShowDebug] = useState(!isPreview);
 
   return (
-    <div className={`flex flex-col bg-black ${isPreview ? 'w-full h-full' : 'h-screen w-screen'}`} style={isPreview ? { aspectRatio: '16/9' } : {}}>
+    <div className={`flex flex-col bg-black ${isPreview ? 'w-full h-full' : 'h-screen w-screen'}`}>
       {/* Main slide renderer */}
       <div className="flex-1 relative">
         <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <div className={`${isPreview ? 'w-full h-full' : 'w-full h-full max-w-[1280px] max-h-[720px]'} aspect-video`}>
+          <div className={`aspect-video ${isPreview ? 'w-full h-full' : 'w-full h-full max-w-[1280px] max-h-[720px]'}`}>
             <SlideRenderer 
               slide={currentSlide} 
               step={currentStep}

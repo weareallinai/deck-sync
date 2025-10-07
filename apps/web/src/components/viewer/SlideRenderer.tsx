@@ -35,7 +35,7 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
     <AnimatePresence mode="wait">
       <motion.div
         key={slide.id}
-        className="w-full h-full relative"
+        className="w-full h-full relative overflow-hidden"
         style={{
           backgroundColor: slide.bg.type === 'color' ? slide.bg.value : undefined,
           backgroundImage: slide.bg.type === 'image' ? `url(${slide.bg.value})` : undefined,
