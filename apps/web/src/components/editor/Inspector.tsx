@@ -496,13 +496,17 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
         <label className="text-xs text-gray-900 dark:text-gray-900 font-medium mb-2 block">Preview</label>
         <div 
           className="aspect-video rounded border-2 border-gray-300"
-          style={{
-            background: slide.bg.type === 'color' ? slide.bg.value :
-                       slide.bg.type === 'gradient' ? slide.bg.value :
-                       `url(${slide.bg.value})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          style={
+            slide.bg.type === 'color' ? {
+              backgroundColor: slide.bg.value,
+            } : slide.bg.type === 'gradient' ? {
+              backgroundImage: slide.bg.value,
+            } : {
+              backgroundImage: `url(${slide.bg.value})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          }
         />
       </div>
     </div>
