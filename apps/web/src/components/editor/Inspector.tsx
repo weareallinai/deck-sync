@@ -117,6 +117,24 @@ export function Inspector() {
               />
             </div>
             <div>
+              <label className="text-xs text-gray-600">Font Family</label>
+              <select
+                value={selectedElement.style.fontFamily || 'Arial'}
+                onChange={(e) => handleUpdateAndSave({ style: { ...selectedElement.style, fontFamily: e.target.value } })}
+                className="w-full px-2 py-1 text-sm border rounded"
+              >
+                <option value="Arial">Arial</option>
+                <option value="Helvetica">Helvetica</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Verdana">Verdana</option>
+                <option value="Trebuchet MS">Trebuchet MS</option>
+                <option value="Comic Sans MS">Comic Sans MS</option>
+                <option value="Impact">Impact</option>
+              </select>
+            </div>
+            <div>
               <label className="text-xs text-gray-600">Font Size</label>
               <input
                 type="number"

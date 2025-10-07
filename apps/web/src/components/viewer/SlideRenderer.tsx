@@ -156,6 +156,7 @@ function ElementRenderer({ element, index, step, onVideoEnd }: ElementRendererPr
           style={{
             ...style,
             ...element.style,
+            fontFamily: element.style.fontFamily || 'Arial',
             color: element.style.color || '#000',
             fontSize: `${element.style.fontSize || 24}px`,
             fontWeight: element.style.fontWeight || 400,

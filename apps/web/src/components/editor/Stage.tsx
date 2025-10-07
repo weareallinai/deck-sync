@@ -15,7 +15,7 @@ export function Stage() {
   const [stageSize, setStageSize] = useState({ width: 1280, height: 720 });
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
   const [textareaValue, setTextareaValue] = useState('');
-  const [textareaPosition, setTextareaPosition] = useState({ x: 0, y: 0, w: 0, h: 0, fontSize: 24 });
+  const [textareaPosition, setTextareaPosition] = useState({ x: 0, y: 0, w: 0, h: 0, fontSize: 24, fontFamily: 'Arial' });
   
   const currentSlide = useEditorStore(state => state.getCurrentSlide());
   const selectedElementId = useEditorStore(state => state.selectedElementId);
@@ -132,6 +132,7 @@ export function Stage() {
       w: element.w * scale,
       h: element.h * scale,
       fontSize: (element.style.fontSize || 24) * scale,
+      fontFamily: element.style.fontFamily || 'Arial',
     });
   };
 
@@ -232,12 +233,12 @@ export function Stage() {
             width: textareaPosition.w,
             height: textareaPosition.h,
             fontSize: textareaPosition.fontSize,
+            fontFamily: textareaPosition.fontFamily,
             padding: '4px',
             border: '2px solid #3b82f6',
             borderRadius: '4px',
             resize: 'none',
             zIndex: 1000,
-            fontFamily: 'Arial',
             backgroundColor: 'white',
           }}
         />
