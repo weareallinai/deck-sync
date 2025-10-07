@@ -27,6 +27,9 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
         const scaleX = width / 1280;
         const scaleY = height / 720;
         const newScale = Math.min(scaleX, scaleY);
+        
+        console.log('[SlideRenderer] Scale update:', { width, height, scaleX, scaleY, newScale });
+        
         setScale(newScale);
         
         // Calculate centering offset
@@ -39,7 +42,9 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
       }
     };
 
-    updateScale();
+    // Delay initial scale calculation to ensure container is rendered
+    const timeout = setTimeout(updateScale, 100);
+    
     window.addEventListener('resize', updateScale);
     
     // Use ResizeObserver for better iframe support
@@ -49,6 +54,7 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
     }
 
     return () => {
+      clearTimeout(timeout);
       window.removeEventListener('resize', updateScale);
       resizeObserver.disconnect();
     };
