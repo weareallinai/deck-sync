@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { SlideRenderer } from './SlideRenderer';
 import { mockSlides } from '@/lib/data/mockSlides';
 import { preloadManager } from '@/lib/render/preload';
+import { ReconnectManager } from '@/lib/realtime/reconnect';
 
 // GUARDRAIL: Viewer component must NOT import Konva or editor dependencies
 // GUARDRAIL: Use only CSS transforms/opacity for animations
@@ -33,22 +34,12 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
   const wsRef = useRef<WebSocket | null>(null);
 
   const [clockOffset, setClockOffset] = useState(0);
+  const [reconnectAttempts, setReconnectAttempts] = useState(0);
+  const [lastSeq, setLastSeq] = useState(-1);
   const pendingEvents = useRef<Map<number, NodeJS.Timeout>>(new Map());
+  const reconnectManager = useRef(new ReconnectManager());
 
-  useEffect(() => {
-    connectWebSocket();
-
-    return () => {
-      if (wsRef.current) {
-        wsRef.current.close();
-      }
-      // Clear pending timeouts
-      pendingEvents.current.forEach(timeout => clearTimeout(timeout));
-      pendingEvents.current.clear();
-    };
-  }, [sessionId]);
-
-  const connectWebSocket = async () => {
+  const connectWebSocket = useCallback(async () => {
     const wsUrl = process.env.NEXT_PUBLIC_WS_BASE || 'ws://localhost:8787';
     const url = `${wsUrl}/${sessionId}`;
     
@@ -58,6 +49,8 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
     ws.onopen = async () => {
       console.log('[Viewer] Connected');
       setIsConnected(true);
+      setReconnectAttempts(0);
+      reconnectManager.current.reset();
       
       // Send HELLO message with viewer role
       ws.send(JSON.stringify({
@@ -65,6 +58,12 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
         role: 'viewer',
         token,
       }));
+
+      // Request snapshot if we've seen events before (reconnect)
+      if (lastSeq >= 0) {
+        console.log('[Viewer] Requesting snapshot after reconnect');
+        ws.send(JSON.stringify({ t: 'REQUEST_SNAPSHOT' }));
+      }
 
       // Perform clock sync
       await performClockSync(ws);
@@ -82,11 +81,21 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
         console.log('[Viewer] Received:', message);
 
         if (message.t === 'STATE') {
-          // Initial state
+          // Initial state or snapshot
           setCurrentStep(message.step);
           setCurrentSlideId(message.slideId);
-          addEvent(`STATE received: step ${message.step}, slide ${message.slideId}`);
+          setLastSeq(message.seq);
+          addEvent(`STATE received: step ${message.step}, slide ${message.slideId}, seq ${message.seq}`);
         } else if (message.t === 'EVT') {
+          // Check for sequence gap
+          if (lastSeq >= 0 && message.seq > lastSeq + 1) {
+            console.warn(`[Viewer] Sequence gap detected: expected ${lastSeq + 1}, got ${message.seq}`);
+            addEvent(`⚠️ Sequence gap - requesting snapshot`);
+            ws.send(JSON.stringify({ t: 'REQUEST_SNAPSHOT' }));
+          }
+          
+          setLastSeq(message.seq);
+          
           // Event from coordinator with applyAt timestamp
           const latency = Date.now() - (message.applyAt - clockOffset);
           addEvent(`EVT: ${message.cmd} (seq=${message.seq}, latency=${latency.toFixed(0)}ms)`);
@@ -107,11 +116,35 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
     ws.onclose = () => {
       console.log('[Viewer] Disconnected');
       setIsConnected(false);
-      addEvent('Disconnected');
+      
+      // Attempt to reconnect
+      const shouldReconnect = reconnectManager.current.scheduleReconnect(() => {
+        setReconnectAttempts(reconnectManager.current.getAttempts());
+        addEvent(`🔄 Reconnecting... (attempt ${reconnectManager.current.getAttempts()})`);
+        connectWebSocket();
+      });
+      
+      if (!shouldReconnect) {
+        addEvent('❌ Max reconnect attempts reached');
+      }
     };
 
     wsRef.current = ws;
-  };
+  }, [sessionId, token, lastSeq, clockOffset]);
+
+  useEffect(() => {
+    connectWebSocket();
+
+    return () => {
+      reconnectManager.current.cancel();
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      // Clear pending timeouts
+      pendingEvents.current.forEach(timeout => clearTimeout(timeout));
+      pendingEvents.current.clear();
+    };
+  }, [connectWebSocket]);
 
   const performClockSync = async (ws: WebSocket) => {
     try {
@@ -269,9 +302,11 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
 
         {/* Connection indicator overlay */}
         <div className="absolute top-4 right-4 z-50">
-          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}>
+          <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${isConnected ? 'bg-green-500' : reconnectAttempts > 0 ? 'bg-yellow-500' : 'bg-red-500'}`}>
             <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-white animate-pulse' : 'bg-white'}`} />
-            <span className="text-white text-xs font-medium">{isConnected ? 'Live' : 'Disconnected'}</span>
+            <span className="text-white text-xs font-medium">
+              {isConnected ? 'Live' : reconnectAttempts > 0 ? `Reconnecting... (${reconnectAttempts})` : 'Disconnected'}
+            </span>
           </div>
         </div>
 

@@ -96,6 +96,18 @@ export class SessionCoordinator {
             });
             break;
 
+          case 'REQUEST_SNAPSHOT':
+            // Send current state snapshot
+            console.log(`[Coordinator] Snapshot requested by ${clientId}`);
+            this.sendToClient(ws, {
+              t: 'STATE',
+              seq: this.seq,
+              slideId: this.currentSlideId,
+              step: this.currentStep,
+              serverTime: Date.now(),
+            });
+            break;
+
           case 'CMD':
             // Only presenter can send commands
             if (clientRole === 'presenter') {
