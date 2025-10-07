@@ -62,7 +62,7 @@ export function Inspector() {
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
         <h2 className="font-semibold text-sm text-gray-700">Properties</h2>
-        <div className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">
+        <div className="text-xs text-gray-700 font-medium bg-gray-100 px-2 py-1 rounded">
           {selectedElement.type}
         </div>
       </div>
@@ -354,7 +354,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
             onChange={(e) => handleColorChange(e.target.value)}
             className="w-full h-10 border rounded cursor-pointer"
           />
-          <div className="mt-1 text-xs text-gray-500">{slide.bg.value}</div>
+          <div className="mt-1 text-xs text-gray-600 font-mono">{slide.bg.value}</div>
         </div>
       )}
 
@@ -378,7 +378,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
                 <option value="to bottom right">Diagonal</option>
               </select>
             </div>
-            <div className="text-xs text-gray-500 font-mono bg-gray-50 p-2 rounded overflow-x-auto">
+            <div className="text-xs text-gray-700 font-mono bg-gray-50 p-2 rounded overflow-x-auto border">
               {slide.bg.value}
             </div>
             <div className="text-xs text-gray-400 italic">

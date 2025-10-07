@@ -18,7 +18,7 @@ export function AnimationsPanel() {
     return (
       <div className="p-4 border-t bg-gray-50">
         <h3 className="font-semibold mb-2 text-sm text-gray-700">Animations</h3>
-        <div className="text-xs text-gray-500 italic">
+        <div className="text-xs text-gray-600">
           Select an element to add animations
         </div>
       </div>
@@ -95,7 +95,7 @@ export function AnimationsPanel() {
       </div>
 
       {animations.length === 0 && !isAddingAnimation && (
-        <div className="text-xs text-gray-500 italic mb-3">
+        <div className="text-xs text-gray-600 italic mb-3">
           No animations • Click "Add" to create one
         </div>
       )}
@@ -139,7 +139,7 @@ export function AnimationsPanel() {
       ))}
 
       {animations.length > 0 && (
-        <div className="mt-3 pt-3 border-t text-xs text-gray-500 italic">
+        <div className="mt-3 pt-3 border-t text-xs text-gray-600 italic">
           💡 Animations play in order (top to bottom)
         </div>
       )}
