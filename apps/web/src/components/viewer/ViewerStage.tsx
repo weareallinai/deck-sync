@@ -119,11 +119,8 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
       }
     };
 
-    ws.onerror = (error) => {
-      // Only log meaningful errors (not connection close events)
-      if (error && typeof error === 'object' && Object.keys(error).length > 0) {
-        console.error('[Viewer] WebSocket error:', error);
-      }
+    ws.onerror = () => {
+      // Suppress error logging - errors are typically handled in onclose
       setIsConnected(false);
     };
 
@@ -301,16 +298,18 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
   const [showDebug, setShowDebug] = useState(true);
 
   return (
-    <div className="h-full w-full flex flex-col">
+    <div className="h-screen w-screen flex flex-col bg-black">
       {/* Main slide renderer */}
       <div className="flex-1 relative">
-        <div className="absolute inset-0 flex items-center justify-center bg-black">
-          <div className="w-full h-full max-w-[1280px] max-h-[720px] aspect-video">
-            <SlideRenderer 
-              slide={currentSlide} 
-              step={currentStep}
-              onVideoEnd={handleVideoEnd}
-            />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="w-full h-full max-w-[1280px] max-h-[720px] aspect-video">
+              <SlideRenderer 
+                slide={currentSlide} 
+                step={currentStep}
+                onVideoEnd={handleVideoEnd}
+              />
+            </div>
           </div>
         </div>
 
