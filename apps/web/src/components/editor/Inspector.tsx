@@ -69,10 +69,10 @@ export function Inspector() {
 
       {/* Position & Size */}
       <div className="mb-4">
-        <h3 className="text-xs font-semibold text-gray-600 mb-2">Position & Size</h3>
+        <h3 className="text-xs font-semibold text-gray-700 mb-2">Position & Size</h3>
         <div className="grid grid-cols-2 gap-2">
           <div>
-            <label className="text-xs text-gray-600">X</label>
+            <label className="text-xs text-gray-700 font-medium">X</label>
             <input
               type="number"
               value={Math.round(selectedElement.x)}
@@ -82,7 +82,7 @@ export function Inspector() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Y</label>
+            <label className="text-xs text-gray-700 font-medium">Y</label>
             <input
               type="number"
               value={Math.round(selectedElement.y)}
@@ -92,7 +92,7 @@ export function Inspector() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Width</label>
+            <label className="text-xs text-gray-700 font-medium">Width</label>
             <input
               type="number"
               value={Math.round(selectedElement.w)}
@@ -102,7 +102,7 @@ export function Inspector() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-600">Height</label>
+            <label className="text-xs text-gray-700 font-medium">Height</label>
             <input
               type="number"
               value={Math.round(selectedElement.h)}
@@ -117,10 +117,10 @@ export function Inspector() {
       {/* Type-specific properties */}
       {selectedElement.type === 'text' && (
         <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-600 mb-2">Text</h3>
+          <h3 className="text-xs font-semibold text-gray-700 mb-2">Text</h3>
           <div className="space-y-2">
             <div>
-              <label className="text-xs text-gray-600">Content</label>
+              <label className="text-xs text-gray-700 font-medium">Content</label>
               <textarea
                 value={selectedElement.content}
                 onChange={(e) => handleUpdate({ content: e.target.value })}
@@ -130,7 +130,7 @@ export function Inspector() {
               />
             </div>
             <div>
-              <label className="text-xs text-gray-600">Font Family</label>
+              <label className="text-xs text-gray-700 font-medium">Font Family</label>
               <select
                 value={selectedElement.style.fontFamily || 'Arial'}
                 onChange={(e) => handleUpdateAndSave({ style: { ...selectedElement.style, fontFamily: e.target.value } })}
@@ -148,7 +148,7 @@ export function Inspector() {
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-600">Font Size</label>
+              <label className="text-xs text-gray-700 font-medium">Font Size</label>
               <input
                 type="number"
                 value={selectedElement.style.fontSize || 24}
@@ -158,7 +158,7 @@ export function Inspector() {
               />
             </div>
             <div>
-              <label className="text-xs text-gray-600">Color</label>
+              <label className="text-xs text-gray-700 font-medium">Color</label>
               <input
                 type="color"
                 value={selectedElement.style.color || '#000000'}
@@ -172,10 +172,10 @@ export function Inspector() {
 
       {selectedElement.type === 'shape' && (
         <div className="mb-4">
-          <h3 className="text-xs font-semibold text-gray-600 mb-2">Shape</h3>
+          <h3 className="text-xs font-semibold text-gray-700 mb-2">Shape</h3>
           <div className="space-y-2">
             <div>
-              <label className="text-xs text-gray-600">Fill Color</label>
+              <label className="text-xs text-gray-700 font-medium">Fill Color</label>
               <input
                 type="color"
                 value={selectedElement.fill || '#cccccc'}
@@ -186,7 +186,7 @@ export function Inspector() {
             {selectedElement.stroke && (
               <>
                 <div>
-                  <label className="text-xs text-gray-600">Stroke Color</label>
+                  <label className="text-xs text-gray-700 font-medium">Stroke Color</label>
                   <input
                     type="color"
                     value={selectedElement.stroke.color}
@@ -195,7 +195,7 @@ export function Inspector() {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-600">Stroke Width</label>
+                  <label className="text-xs text-gray-700 font-medium">Stroke Width</label>
                   <input
                     type="number"
                     value={selectedElement.stroke.width}
@@ -212,7 +212,7 @@ export function Inspector() {
 
       {/* Layer control */}
       <div className="mb-4">
-        <h3 className="text-xs font-semibold text-gray-600 mb-2">Layer</h3>
+        <h3 className="text-xs font-semibold text-gray-700 mb-2">Layer</h3>
         <div className="grid grid-cols-2 gap-1">
           <Button 
             size="sm" 
@@ -332,7 +332,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
     <div className="space-y-4">
       {/* Background Type Selector */}
       <div>
-        <label className="text-xs text-gray-600 mb-2 block">Background Type</label>
+        <label className="text-xs text-gray-700 font-medium mb-2 block">Background Type</label>
         <select
           value={slide.bg.type}
           onChange={(e) => handleBackgroundTypeChange(e.target.value as 'color' | 'gradient' | 'image')}
@@ -347,7 +347,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
       {/* Color Picker (for solid color) */}
       {slide.bg.type === 'color' && (
         <div>
-          <label className="text-xs text-gray-600 mb-2 block">Background Color</label>
+          <label className="text-xs text-gray-700 font-medium mb-2 block">Background Color</label>
           <input
             type="color"
             value={slide.bg.value}
@@ -361,10 +361,10 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
       {/* Gradient Editor (simple two-color gradient) */}
       {slide.bg.type === 'gradient' && (
         <div>
-          <label className="text-xs text-gray-600 mb-2 block">Gradient</label>
+          <label className="text-xs text-gray-700 font-medium mb-2 block">Gradient</label>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="text-xs text-gray-600">Direction:</span>
+              <span className="text-xs text-gray-700 font-medium">Direction:</span>
               <select
                 value={slide.bg.value.includes('to bottom') ? 'to bottom' : slide.bg.value.includes('to right') ? 'to right' : 'to bottom'}
                 onChange={(e) => {
@@ -391,7 +391,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
       {/* Image URL Input (placeholder for R2 upload) */}
       {slide.bg.type === 'image' && (
         <div>
-          <label className="text-xs text-gray-600 mb-2 block">Background Image</label>
+          <label className="text-xs text-gray-700 font-medium mb-2 block">Background Image</label>
           <input
             type="text"
             value={slide.bg.value}
@@ -422,7 +422,7 @@ function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHisto
 
       {/* Preview */}
       <div>
-        <label className="text-xs text-gray-600 mb-2 block">Preview</label>
+        <label className="text-xs text-gray-700 font-medium mb-2 block">Preview</label>
         <div 
           className="aspect-video rounded border-2 border-gray-300"
           style={{

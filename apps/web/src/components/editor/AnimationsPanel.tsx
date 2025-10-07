@@ -211,7 +211,7 @@ function AnimationItem({
         <div className="p-2 space-y-2">
           {/* Animation Type */}
           <div>
-            <label className="text-xs text-gray-600 block mb-1">Type</label>
+            <label className="text-xs text-gray-700 font-medium block mb-1">Type</label>
             <select
               value={animation.type}
               onChange={(e) => onUpdate({ type: e.target.value as Animation['type'] })}
@@ -230,7 +230,7 @@ function AnimationItem({
 
           {/* Trigger */}
           <div>
-            <label className="text-xs text-gray-600 block mb-1">Trigger</label>
+            <label className="text-xs text-gray-700 font-medium block mb-1">Trigger</label>
             <select
               value={animation.trigger}
               onChange={(e) => onUpdate({ trigger: e.target.value as Animation['trigger'] })}
@@ -244,7 +244,7 @@ function AnimationItem({
 
           {/* Duration */}
           <div>
-            <label className="text-xs text-gray-600 block mb-1">
+            <label className="text-xs text-gray-700 font-medium block mb-1">
               Duration: {animation.duration}s
             </label>
             <input
@@ -261,7 +261,7 @@ function AnimationItem({
 
           {/* Delay */}
           <div>
-            <label className="text-xs text-gray-600 block mb-1">
+            <label className="text-xs text-gray-700 font-medium block mb-1">
               Delay: {animation.delay}s
             </label>
             <input
@@ -278,7 +278,7 @@ function AnimationItem({
 
           {/* Easing */}
           <div>
-            <label className="text-xs text-gray-600 block mb-1">Easing</label>
+            <label className="text-xs text-gray-700 font-medium block mb-1">Easing</label>
             <select
               value={animation.easing}
               onChange={(e) => onUpdate({ easing: e.target.value as Animation['easing'] })}
