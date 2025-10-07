@@ -298,13 +298,9 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
 
   const [showDebug, setShowDebug] = useState(!isPreview);
 
-  // Calculate scale for slide content
-  const slideScale = `calc(min(100vw, 100vh * 16 / 9) / 1280)`;
-
   return (
     <div 
       className={`flex flex-col bg-black ${isPreview ? 'w-full h-full' : 'h-screen w-screen'}`}
-      style={{ '--slide-scale': slideScale } as React.CSSProperties}
     >
       {/* Main slide renderer */}
       <div className="flex-1 relative">

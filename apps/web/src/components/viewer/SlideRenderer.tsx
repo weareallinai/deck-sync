@@ -34,6 +34,7 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
   return (
     <AnimatePresence mode="wait">
       <motion.div
+        ref={containerRef}
         key={slide.id}
         className="w-full h-full relative overflow-hidden"
         style={{
@@ -49,12 +50,14 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
       >
         {/* Inner container at fixed 1280x720 that scales down */}
         <div 
-          className="absolute inset-0" 
+          className="absolute"
           style={{
             width: '1280px',
             height: '720px',
-            transform: 'scale(var(--slide-scale))',
+            transform: `scale(${scale})`,
             transformOrigin: 'top left',
+            left: containerRef.current ? (containerRef.current.offsetWidth - 1280 * scale) / 2 : 0,
+            top: containerRef.current ? (containerRef.current.offsetHeight - 720 * scale) / 2 : 0,
           }}
         >
           {/* Render elements */}
