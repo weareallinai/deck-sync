@@ -6,28 +6,40 @@ import { extractViewerToken } from '@/lib/utils/jwt';
 
 export default function ViewPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const [sessionId, setSessionId] = useState<string>('');
-  const [token, setToken] = useState<string | null>(null);
-  const [isPreview, setIsPreview] = useState(false);
+  const [token, setToken] = useState<string | null>(() => {
+    // Extract token immediately on mount
+    if (typeof window !== 'undefined') {
+      return extractViewerToken();
+    }
+    return null;
+  });
+  const [isPreview, setIsPreview] = useState(() => {
+    // Check preview mode immediately
+    if (typeof window !== 'undefined') {
+      const t = extractViewerToken();
+      return t === 'presenter-preview';
+    }
+    return false;
+  });
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
-    params.then(p => setSessionId(p.sessionId));
-    
-    // GUARDRAIL: Extract JWT from URL ?t= parameter
-    const viewerToken = extractViewerToken();
-    if (!viewerToken) {
-      console.error('[Viewer] No token found in URL');
-    }
-    
-    // Check if this is presenter preview mode
-    if (viewerToken === 'presenter-preview') {
-      setIsPreview(true);
-    }
-    
-    setToken(viewerToken);
+    params.then(p => {
+      setSessionId(p.sessionId);
+      setIsLoading(false);
+    });
   }, [params]);
+
+  // Show loading state while we resolve params
+  if (isLoading) {
+    return (
+      <div className={isPreview ? 'w-full h-full bg-black' : 'h-screen w-screen bg-black'} />
+    );
+  }
 
   // GUARDRAIL: Deny access without valid token
   if (!token) {
+    console.error('[Viewer] No token found in URL');
     return (
       <div className="h-screen w-screen bg-black flex items-center justify-center">
         <div className="text-white text-center">
