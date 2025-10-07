@@ -13,6 +13,9 @@ export function Stage() {
   
   const [scale, setScale] = useState(1);
   const [stageSize, setStageSize] = useState({ width: 1280, height: 720 });
+  const [editingTextId, setEditingTextId] = useState<string | null>(null);
+  const [textareaValue, setTextareaValue] = useState('');
+  const [textareaPosition, setTextareaPosition] = useState({ x: 0, y: 0, w: 0, h: 0, fontSize: 24 });
   
   const currentSlide = useEditorStore(state => state.getCurrentSlide());
   const selectedElementId = useEditorStore(state => state.selectedElementId);
@@ -47,7 +50,14 @@ export function Stage() {
 
   // Handle transformer attachment
   useEffect(() => {
-    if (!transformerRef.current || !selectedElementId) return;
+    if (!transformerRef.current) return;
+    
+    if (!selectedElementId) {
+      // Clear transformer when nothing is selected
+      transformerRef.current.nodes([]);
+      transformerRef.current.getLayer()?.batchDraw();
+      return;
+    }
     
     const stage = stageRef.current;
     if (!stage) return;
@@ -60,8 +70,9 @@ export function Stage() {
   }, [selectedElementId]);
 
   const handleStageClick = (e: Konva.KonvaEventObject<MouseEvent>) => {
-    // Clicked on empty area - deselect
-    if (e.target === e.target.getStage()) {
+    // Clicked on empty area (background) - deselect
+    const clickedOnEmpty = e.target === e.target.getStage() || e.target.attrs.id === 'background';
+    if (clickedOnEmpty) {
       selectElement(null);
     }
   };
@@ -99,6 +110,46 @@ export function Stage() {
     });
   };
 
+  const handleTextDoubleClick = (element: SlideElement) => {
+    if (element.type !== 'text') return;
+    
+    // Calculate position in screen coordinates
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const containerRect = container.getBoundingClientRect();
+    const x = containerRect.left + (element.x * scale) + (stageSize.width - 1280 * scale) / 2;
+    const y = containerRect.top + (element.y * scale) + (stageSize.height - 720 * scale) / 2;
+    
+    setEditingTextId(element.id);
+    setTextareaValue(element.content);
+    setTextareaPosition({
+      x,
+      y,
+      w: element.w * scale,
+      h: element.h * scale,
+      fontSize: (element.style.fontSize || 24) * scale,
+    });
+  };
+
+  const handleTextEditComplete = () => {
+    if (!currentSlideId || !editingTextId) return;
+    
+    updateElement(currentSlideId, editingTextId, {
+      content: textareaValue,
+    });
+    
+    setEditingTextId(null);
+    setTextareaValue('');
+  };
+
+  const handleTextareaKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      handleTextEditComplete();
+    }
+    // Don't prevent default for Enter - allow multiline
+  };
+
   if (!currentSlide) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -128,6 +179,7 @@ export function Stage() {
           <Layer>
             {/* Background */}
             <Rect
+              id="background"
               width={1280}
               height={720}
               fill={currentSlide.bg.type === 'color' ? currentSlide.bg.value : '#ffffff'}
@@ -142,6 +194,7 @@ export function Stage() {
                 onClick={() => handleElementClick(element.id)}
                 onDragEnd={(e) => handleDragEnd(element.id, e)}
                 onTransformEnd={(e) => handleTransformEnd(element.id, e)}
+                onDoubleClick={() => handleTextDoubleClick(element)}
               />
             ))}
             
@@ -159,6 +212,32 @@ export function Stage() {
           </Layer>
         </KonvaStage>
       </div>
+
+      {/* Text editing overlay */}
+      {editingTextId && (
+        <textarea
+          autoFocus
+          value={textareaValue}
+          onChange={(e) => setTextareaValue(e.target.value)}
+          onBlur={handleTextEditComplete}
+          onKeyDown={handleTextareaKeyDown}
+          style={{
+            position: 'fixed',
+            left: textareaPosition.x,
+            top: textareaPosition.y,
+            width: textareaPosition.w,
+            height: textareaPosition.h,
+            fontSize: textareaPosition.fontSize,
+            padding: '4px',
+            border: '2px solid #3b82f6',
+            borderRadius: '4px',
+            resize: 'none',
+            zIndex: 1000,
+            fontFamily: 'Arial',
+            backgroundColor: 'white',
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -170,9 +249,10 @@ interface ElementRendererProps {
   onClick: () => void;
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => void;
   onTransformEnd: (e: Konva.KonvaEventObject<Event>) => void;
+  onDoubleClick: () => void;
 }
 
-function ElementRenderer({ element, isSelected, onClick, onDragEnd, onTransformEnd }: ElementRendererProps) {
+function ElementRenderer({ element, isSelected, onClick, onDragEnd, onTransformEnd, onDoubleClick }: ElementRendererProps) {
   const shapeRef = useRef<any>(null);
 
   useEffect(() => {
@@ -188,6 +268,8 @@ function ElementRenderer({ element, isSelected, onClick, onDragEnd, onTransformE
     draggable: true,
     onClick,
     onTap: onClick,
+    onDblClick: onDoubleClick,
+    onDblTap: onDoubleClick,
     onDragEnd,
     onTransformEnd,
     ref: shapeRef,
