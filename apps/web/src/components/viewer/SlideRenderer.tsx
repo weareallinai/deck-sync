@@ -133,12 +133,91 @@ function ElementRenderer({ element, index, step, onVideoEnd }: ElementRendererPr
   // Determine if this element should be visible based on step
   const isVisible = index <= step;
 
-  // Simple fade-in animation
-  const animationProps = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 },
-    transition: { duration: 0.3, delay: index * 0.1 },
+  // Get animations for this element
+  const animations = element.animations || [];
+  
+  // Find animations that should trigger based on current state
+  const onLoadAnimations = animations.filter(a => a.trigger === 'on-load');
+  const onStepAnimations = animations.filter(a => a.trigger === 'on-step');
+  
+  // Use the first animation for this element (can be enhanced to chain multiple)
+  const activeAnimation = isVisible && onStepAnimations.length > 0 
+    ? onStepAnimations[0] 
+    : onLoadAnimations.length > 0 
+    ? onLoadAnimations[0] 
+    : null;
+
+  // Build animation configuration based on animation type
+  const getAnimationConfig = (anim: typeof activeAnimation) => {
+    if (!anim) {
+      // Default simple fade-in
+      return {
+        initial: { opacity: 0, y: 20 },
+        animate: { opacity: isVisible ? 1 : 0, y: isVisible ? 0 : 20 },
+        transition: { duration: 0.3, delay: index * 0.1 },
+      };
+    }
+
+    const base = { opacity: isVisible ? 1 : 0 };
+    const initial = { opacity: 0 };
+    
+    switch (anim.type) {
+      case 'fade':
+        return {
+          initial,
+          animate: base,
+          transition: { duration: anim.duration, delay: anim.delay, ease: anim.easing || 'ease-out' },
+        };
+      case 'slide-up':
+        return {
+          initial: { ...initial, y: 50 },
+          animate: { ...base, y: 0 },
+          transition: { duration: anim.duration, delay: anim.delay, ease: anim.easing || 'ease-out' },
+        };
+      case 'slide-down':
+        return {
+          initial: { ...initial, y: -50 },
+          animate: { ...base, y: 0 },
+          transition: { duration: anim.duration, delay: anim.delay, ease: anim.easing || 'ease-out' },
+        };
+      case 'slide-left':
+        return {
+          initial: { ...initial, x: 50 },
+          animate: { ...base, x: 0 },
+          transition: { duration: anim.duration, delay: anim.delay, ease: anim.easing || 'ease-out' },
+        };
+      case 'slide-right':
+        return {
+          initial: { ...initial, x: -50 },
+          animate: { ...base, x: 0 },
+          transition: { duration: anim.duration, delay: anim.delay, ease: anim.easing || 'ease-out' },
+        };
+      case 'zoom':
+        return {
+          initial: { ...initial, scale: 0.5 },
+          animate: { ...base, scale: 1 },
+          transition: { duration: anim.duration, delay: anim.delay, ease: anim.easing || 'ease-out' },
+        };
+      case 'bounce':
+        return {
+          initial: { ...initial, y: -30 },
+          animate: { ...base, y: 0 },
+          transition: { 
+            duration: anim.duration, 
+            delay: anim.delay, 
+            ease: [0.68, -0.55, 0.27, 1.55], // Bounce easing
+          },
+        };
+      default:
+        return {
+          initial,
+          animate: base,
+          transition: { duration: anim.duration, delay: anim.delay, ease: anim.easing || 'ease-out' },
+        };
+    }
   };
+
+  const animationProps = getAnimationConfig(activeAnimation);
 
   const style = {
     position: 'absolute' as const,
