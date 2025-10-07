@@ -2,24 +2,37 @@
 
 import { useEditorStore } from '@/lib/state/editorStore';
 import { Button } from '@deck/ui';
+import type { Background } from '@deck/shared';
 
 export function Inspector() {
   const selectedElement = useEditorStore(state => state.getSelectedElement());
   const currentSlideId = useEditorStore(state => state.currentSlideId);
   const selectedElementId = useEditorStore(state => state.selectedElementId);
+  const currentSlide = useEditorStore(state => state.getCurrentSlide());
   const updateElement = useEditorStore(state => state.updateElement);
   const deleteElement = useEditorStore(state => state.deleteElement);
   const duplicateElement = useEditorStore(state => state.duplicateElement);
   const reorderElement = useEditorStore(state => state.reorderElement);
+  const updateSlideBackground = useEditorStore(state => state.updateSlideBackground);
   const saveHistory = useEditorStore(state => state.saveHistory);
 
+  // Show slide properties when no element is selected
   if (!selectedElement || !currentSlideId || !selectedElementId) {
     return (
       <div className="p-4">
-        <h2 className="font-semibold text-sm text-gray-700 mb-4">Properties</h2>
-        <div className="text-sm text-gray-500">
-          Select an element to edit properties
-        </div>
+        <h2 className="font-semibold text-sm text-gray-700 mb-4">Slide Properties</h2>
+        {currentSlideId && currentSlide ? (
+          <SlidePropertiesPanel 
+            slideId={currentSlideId}
+            slide={currentSlide}
+            updateSlideBackground={updateSlideBackground}
+            saveHistory={saveHistory}
+          />
+        ) : (
+          <div className="text-sm text-gray-500">
+            No slide selected
+          </div>
+        )}
       </div>
     );
   }
@@ -265,6 +278,161 @@ export function Inspector() {
         >
           🗑️ Delete
         </Button>
+      </div>
+    </div>
+  );
+}
+
+// Slide Properties Panel Component
+interface SlidePropertiesPanelProps {
+  slideId: string;
+  slide: any;
+  updateSlideBackground: (slideId: string, bg: Background) => void;
+  saveHistory: () => void;
+}
+
+function SlidePropertiesPanel({ slideId, slide, updateSlideBackground, saveHistory }: SlidePropertiesPanelProps) {
+  const handleBackgroundTypeChange = (type: 'color' | 'gradient' | 'image') => {
+    let newBg: Background;
+    
+    switch (type) {
+      case 'color':
+        newBg = { type: 'color', value: slide.bg.type === 'color' ? slide.bg.value : '#ffffff' };
+        break;
+      case 'gradient':
+        newBg = { type: 'gradient', value: 'linear-gradient(to bottom, #3b82f6, #8b5cf6)' };
+        break;
+      case 'image':
+        newBg = { type: 'image', value: 'https://picsum.photos/1280/720' };
+        break;
+    }
+    
+    updateSlideBackground(slideId, newBg);
+    saveHistory();
+  };
+
+  const handleColorChange = (color: string) => {
+    updateSlideBackground(slideId, { type: 'color', value: color });
+    saveHistory();
+  };
+
+  const handleGradientChange = (gradient: string) => {
+    updateSlideBackground(slideId, { type: 'gradient', value: gradient });
+    saveHistory();
+  };
+
+  const handleImageUrlChange = (url: string) => {
+    if (url.trim()) {
+      updateSlideBackground(slideId, { type: 'image', value: url });
+      saveHistory();
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Background Type Selector */}
+      <div>
+        <label className="text-xs text-gray-600 mb-2 block">Background Type</label>
+        <select
+          value={slide.bg.type}
+          onChange={(e) => handleBackgroundTypeChange(e.target.value as 'color' | 'gradient' | 'image')}
+          className="w-full px-2 py-1 text-sm border rounded"
+        >
+          <option value="color">Solid Color</option>
+          <option value="gradient">Gradient</option>
+          <option value="image">Image</option>
+        </select>
+      </div>
+
+      {/* Color Picker (for solid color) */}
+      {slide.bg.type === 'color' && (
+        <div>
+          <label className="text-xs text-gray-600 mb-2 block">Background Color</label>
+          <input
+            type="color"
+            value={slide.bg.value}
+            onChange={(e) => handleColorChange(e.target.value)}
+            className="w-full h-10 border rounded cursor-pointer"
+          />
+          <div className="mt-1 text-xs text-gray-500">{slide.bg.value}</div>
+        </div>
+      )}
+
+      {/* Gradient Editor (simple two-color gradient) */}
+      {slide.bg.type === 'gradient' && (
+        <div>
+          <label className="text-xs text-gray-600 mb-2 block">Gradient</label>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-600">Direction:</span>
+              <select
+                value={slide.bg.value.includes('to bottom') ? 'to bottom' : slide.bg.value.includes('to right') ? 'to right' : 'to bottom'}
+                onChange={(e) => {
+                  const colors = slide.bg.value.match(/#[0-9a-fA-F]{6}/g) || ['#3b82f6', '#8b5cf6'];
+                  handleGradientChange(`linear-gradient(${e.target.value}, ${colors[0]}, ${colors[1]})`);
+                }}
+                className="flex-1 px-2 py-1 text-xs border rounded"
+              >
+                <option value="to bottom">Top to Bottom</option>
+                <option value="to right">Left to Right</option>
+                <option value="to bottom right">Diagonal</option>
+              </select>
+            </div>
+            <div className="text-xs text-gray-500 font-mono bg-gray-50 p-2 rounded overflow-x-auto">
+              {slide.bg.value}
+            </div>
+            <div className="text-xs text-gray-400 italic">
+              💡 Tip: Edit gradient CSS directly in the future
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Image URL Input (placeholder for R2 upload) */}
+      {slide.bg.type === 'image' && (
+        <div>
+          <label className="text-xs text-gray-600 mb-2 block">Background Image</label>
+          <input
+            type="text"
+            value={slide.bg.value}
+            onChange={(e) => {
+              updateSlideBackground(slideId, { type: 'image', value: e.target.value });
+            }}
+            onBlur={() => saveHistory()}
+            placeholder="Enter image URL"
+            className="w-full px-2 py-1 text-sm border rounded mb-2"
+          />
+          <div className="text-xs text-gray-400 italic mb-2">
+            📸 Paste an image URL (drag & drop upload coming soon)
+          </div>
+          {slide.bg.value && (
+            <div className="aspect-video bg-gray-100 rounded overflow-hidden border">
+              <img 
+                src={slide.bg.value} 
+                alt="Background preview" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Preview */}
+      <div>
+        <label className="text-xs text-gray-600 mb-2 block">Preview</label>
+        <div 
+          className="aspect-video rounded border-2 border-gray-300"
+          style={{
+            background: slide.bg.type === 'color' ? slide.bg.value :
+                       slide.bg.type === 'gradient' ? slide.bg.value :
+                       `url(${slide.bg.value})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
       </div>
     </div>
   );

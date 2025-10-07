@@ -166,12 +166,24 @@ export function Stage() {
   return (
     <div ref={containerRef} className="w-full h-full flex items-center justify-center bg-gray-100 overflow-hidden">
       <div 
-        className="bg-white shadow-2xl" 
+        className="shadow-2xl relative" 
         style={{ 
           width: stageSize.width, 
           height: stageSize.height 
         }}
       >
+        {/* Background layer (for gradients and images) */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: currentSlide.bg.type === 'color' ? currentSlide.bg.value :
+                       currentSlide.bg.type === 'gradient' ? currentSlide.bg.value :
+                       `url(${currentSlide.bg.value})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        
         <KonvaStage
           ref={stageRef}
           width={stageSize.width}
@@ -182,12 +194,12 @@ export function Stage() {
           onTap={handleStageClick}
         >
           <Layer>
-            {/* Background */}
+            {/* Transparent background rect for click detection */}
             <Rect
               id="background"
               width={1280}
               height={720}
-              fill={currentSlide.bg.type === 'color' ? currentSlide.bg.value : '#ffffff'}
+              fill="transparent"
             />
             
             {/* Elements */}
