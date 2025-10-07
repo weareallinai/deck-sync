@@ -17,6 +17,7 @@ interface SlideRendererProps {
 export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ left: 0, top: 0 });
 
   useEffect(() => {
     const updateScale = () => {
@@ -27,6 +28,14 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
         const scaleY = height / 720;
         const newScale = Math.min(scaleX, scaleY);
         setScale(newScale);
+        
+        // Calculate centering offset
+        const scaledWidth = 1280 * newScale;
+        const scaledHeight = 720 * newScale;
+        setOffset({
+          left: (width - scaledWidth) / 2,
+          top: (height - scaledHeight) / 2,
+        });
       }
     };
 
@@ -87,8 +96,8 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
             height: '720px',
             transform: `scale(${scale})`,
             transformOrigin: 'top left',
-            left: containerRef.current ? (containerRef.current.offsetWidth - 1280 * scale) / 2 : 0,
-            top: containerRef.current ? (containerRef.current.offsetHeight - 720 * scale) / 2 : 0,
+            left: `${offset.left}px`,
+            top: `${offset.top}px`,
           }}
         >
           {/* Render elements */}
