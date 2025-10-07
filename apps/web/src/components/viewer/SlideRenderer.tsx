@@ -1,6 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRef, useEffect, useState } from 'react';
 import type { Slide, Element as SlideElement } from '@deck/shared';
 import { getTransitionConfig } from '@/lib/render/transitions';
 import { VideoPlayer } from './VideoPlayer';
@@ -14,6 +15,36 @@ interface SlideRendererProps {
 }
 
 export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        // Calculate scale to fit 1280x720 content into container
+        const scaleX = width / 1280;
+        const scaleY = height / 720;
+        const newScale = Math.min(scaleX, scaleY);
+        setScale(newScale);
+      }
+    };
+
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    
+    // Use ResizeObserver for better iframe support
+    const resizeObserver = new ResizeObserver(updateScale);
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener('resize', updateScale);
+      resizeObserver.disconnect();
+    };
+  }, []);
+  
   if (!slide) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-900">
