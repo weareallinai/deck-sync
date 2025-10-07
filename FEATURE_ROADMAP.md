@@ -75,13 +75,17 @@ This document tracks potential features and enhancements for the Deck Sync appli
   - ⏳ Transition duration
   - ⏳ Transition easing
 
-- [ ] **Animations Panel**
-  - ⏳ Add animation to element
-  - ⏳ Set animation type (fade-in, slide-in, zoom-in, etc.)
-  - ⏳ Set animation trigger (on-step, on-load)
-  - ⏳ Animation duration
-  - ⏳ Animation delay
-  - ⏳ Reorder animations (determines step sequence)
+- [x] **Animations Panel** ✅
+  - Add animation to element ✅
+  - Set animation type (fade, slide-up/down/left/right, zoom, bounce) ✅
+  - Set animation trigger (on-step, on-load) ✅
+  - Animation duration (0.1-2s slider) ✅
+  - Animation delay (0-2s slider) ✅
+  - Easing options (linear, ease, ease-in, ease-out, ease-in-out) ✅
+  - Reorder animations (up/down buttons) ✅
+  - Delete animations ✅
+  - Collapsible UI for space efficiency ✅
+  - Animations apply in viewer presentation ✅
 
 ### Priority Polish Features (Next Up!)
 - [x] **Font Selection** ✅
