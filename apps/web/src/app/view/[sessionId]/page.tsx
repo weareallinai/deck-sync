@@ -7,6 +7,7 @@ import { extractViewerToken } from '@/lib/utils/jwt';
 export default function ViewPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const [sessionId, setSessionId] = useState<string>('');
   const [token, setToken] = useState<string | null>(null);
+  const [isPreview, setIsPreview] = useState(false);
   
   useEffect(() => {
     params.then(p => setSessionId(p.sessionId));
@@ -16,6 +17,12 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
     if (!viewerToken) {
       console.error('[Viewer] No token found in URL');
     }
+    
+    // Check if this is presenter preview mode
+    if (viewerToken === 'presenter-preview') {
+      setIsPreview(true);
+    }
+    
     setToken(viewerToken);
   }, [params]);
 
@@ -33,8 +40,8 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
 
   // GUARDRAIL: Viewer page imports NO editor dependencies (Konva, etc.)
   return (
-    <div className="h-screen w-screen bg-black">
-      <ViewerStage sessionId={sessionId} token={token} />
+    <div className={isPreview ? 'w-full h-full bg-black' : 'h-screen w-screen bg-black'}>
+      <ViewerStage sessionId={sessionId} token={token} isPreview={isPreview} />
     </div>
   );
 }
