@@ -30,7 +30,7 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
   const [isConnected, setIsConnected] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [colorIndex, setColorIndex] = useState(0);
-  const [currentSlideId, setCurrentSlideId] = useState<string | null>(null);
+  const [currentSlideId, setCurrentSlideId] = useState<string | null>('slide-1'); // Initialize to first slide
   const [events, setEvents] = useState<string[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
 
