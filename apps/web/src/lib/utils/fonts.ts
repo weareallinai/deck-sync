@@ -19,23 +19,26 @@ export interface FontOption {
 /**
  * Available fonts for text elements
  * Using Google Fonts via Next.js font optimization
+ * 
+ * Note: We use actual font family names (not CSS variables) for Konva canvas compatibility.
+ * The fonts are still loaded via Next.js in layout.tsx and available globally.
  */
 export const AVAILABLE_FONTS: FontOption[] = [
   // Sans-serif fonts (clean, modern, great for body text)
-  { name: 'Inter', value: 'var(--font-inter), sans-serif', category: 'sans-serif' },
-  { name: 'Roboto', value: 'var(--font-roboto), sans-serif', category: 'sans-serif' },
-  { name: 'Open Sans', value: 'var(--font-open-sans), sans-serif', category: 'sans-serif' },
-  { name: 'Montserrat', value: 'var(--font-montserrat), sans-serif', category: 'sans-serif' },
-  { name: 'Fira Sans', value: 'var(--font-fira-sans), sans-serif', category: 'sans-serif' },
-  { name: 'Poppins', value: 'var(--font-poppins), sans-serif', category: 'sans-serif' },
-  { name: 'Source Sans', value: 'var(--font-source-sans), sans-serif', category: 'sans-serif' },
-  { name: 'Raleway', value: 'var(--font-raleway), sans-serif', category: 'sans-serif' },
+  { name: 'Inter', value: 'Inter, sans-serif', category: 'sans-serif' },
+  { name: 'Roboto', value: 'Roboto, sans-serif', category: 'sans-serif' },
+  { name: 'Open Sans', value: '"Open Sans", sans-serif', category: 'sans-serif' },
+  { name: 'Montserrat', value: 'Montserrat, sans-serif', category: 'sans-serif' },
+  { name: 'Fira Sans', value: '"Fira Sans", sans-serif', category: 'sans-serif' },
+  { name: 'Poppins', value: 'Poppins, sans-serif', category: 'sans-serif' },
+  { name: 'Source Sans 3', value: '"Source Sans 3", sans-serif', category: 'sans-serif' },
+  { name: 'Raleway', value: 'Raleway, sans-serif', category: 'sans-serif' },
   
   // Serif fonts (elegant, traditional, great for headings)
-  { name: 'Playfair Display', value: 'var(--font-playfair), serif', category: 'serif' },
-  { name: 'Lora', value: 'var(--font-lora), serif', category: 'serif' },
-  { name: 'Merriweather', value: 'var(--font-merriweather), serif', category: 'serif' },
-  { name: 'PT Serif', value: 'var(--font-pt-serif), serif', category: 'serif' },
+  { name: 'Playfair Display', value: '"Playfair Display", serif', category: 'serif' },
+  { name: 'Lora', value: 'Lora, serif', category: 'serif' },
+  { name: 'Merriweather', value: 'Merriweather, serif', category: 'serif' },
+  { name: 'PT Serif', value: '"PT Serif", serif', category: 'serif' },
 ];
 
 /**
