@@ -1,9 +1,12 @@
 'use client';
 
-export function ConnectionStatus() {
-  // Stub: will show WebSocket connection state and latency
-  const status = 'connected'; // 'connecting' | 'connected' | 'disconnected'
-  const latency = 42;
+interface ConnectionStatusProps {
+  isConnected: boolean;
+  latency?: number;
+}
+
+export function ConnectionStatus({ isConnected, latency }: ConnectionStatusProps) {
+  const status = isConnected ? 'connected' : 'disconnected';
 
   const statusColors = {
     connecting: 'bg-yellow-500',
@@ -17,7 +20,7 @@ export function ConnectionStatus() {
         <div className={`w-2 h-2 rounded-full ${statusColors[status]}`} />
         <span className="text-sm font-medium capitalize">{status}</span>
       </div>
-      {status === 'connected' && (
+      {status === 'connected' && latency && (
         <span className="text-xs text-gray-400">{latency}ms</span>
       )}
     </div>
