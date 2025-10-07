@@ -6,34 +6,28 @@ import { extractViewerToken } from '@/lib/utils/jwt';
 
 export default function ViewPage({ params }: { params: Promise<{ sessionId: string }> }) {
   const [sessionId, setSessionId] = useState<string>('');
-  const [token, setToken] = useState<string | null>(() => {
-    // Extract token immediately on mount
-    if (typeof window !== 'undefined') {
-      return extractViewerToken();
-    }
-    return null;
-  });
-  const [isPreview, setIsPreview] = useState(() => {
-    // Check preview mode immediately
-    if (typeof window !== 'undefined') {
-      const t = extractViewerToken();
-      return t === 'presenter-preview';
-    }
-    return false;
-  });
+  const [token, setToken] = useState<string | null>(null);
+  const [isPreview, setIsPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
   
   useEffect(() => {
+    // Extract token after mount to avoid hydration mismatch
+    const t = extractViewerToken();
+    setToken(t);
+    setIsPreview(t === 'presenter-preview');
+    setMounted(true);
+    
     params.then(p => {
       setSessionId(p.sessionId);
       setIsLoading(false);
     });
   }, [params]);
 
-  // Show loading state while we resolve params
-  if (isLoading) {
+  // Show consistent loading state during SSR and initial client render
+  if (!mounted || isLoading) {
     return (
-      <div className={isPreview ? 'w-full h-full bg-black' : 'h-screen w-screen bg-black'} />
+      <div className="w-full h-full bg-black" style={{ minHeight: '100vh' }} />
     );
   }
 
