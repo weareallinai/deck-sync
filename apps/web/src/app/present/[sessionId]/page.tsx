@@ -96,13 +96,13 @@ export default function PresentPage({ params }: { params: Promise<{ sessionId: s
     <div className="flex h-screen bg-gray-900">
       {/* Main preview */}
       <main className="flex-1 flex items-center justify-center p-8 bg-black">
-        <div className="aspect-video w-full max-w-5xl border-2 border-gray-700 rounded-lg overflow-hidden shadow-2xl bg-black">
+        <div className="w-full max-w-5xl border-2 border-gray-700 rounded-lg overflow-hidden shadow-2xl bg-black" style={{ aspectRatio: '16/9' }}>
           {sessionId && (
             <iframe
               src={`/view/${sessionId}?t=presenter-preview`}
               className="w-full h-full border-0"
               title="Presenter Preview"
-              style={{ display: 'block' }}
+              style={{ display: 'block', margin: 0, padding: 0 }}
             />
           )}
         </div>
