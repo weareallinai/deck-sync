@@ -47,16 +47,27 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
         exit={transitionConfig.exit}
         transition={transitionConfig.transition}
       >
-        {/* Render elements */}
-        {visibleElements.map((element, index) => (
-          <ElementRenderer
-            key={element.id}
-            element={element}
-            index={index}
-            step={step}
-            onVideoEnd={onVideoEnd}
-          />
-        ))}
+        {/* Inner container at fixed 1280x720 that scales down */}
+        <div 
+          className="absolute inset-0" 
+          style={{
+            width: '1280px',
+            height: '720px',
+            transform: 'scale(var(--slide-scale))',
+            transformOrigin: 'top left',
+          }}
+        >
+          {/* Render elements */}
+          {visibleElements.map((element, index) => (
+            <ElementRenderer
+              key={element.id}
+              element={element}
+              index={index}
+              step={step}
+              onVideoEnd={onVideoEnd}
+            />
+          ))}
+        </div>
       </motion.div>
     </AnimatePresence>
   );
