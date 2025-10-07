@@ -97,20 +97,21 @@ export default function PresentPage({ params }: { params: Promise<{ sessionId: s
       {/* Main preview */}
       <main className="flex-1 flex items-center justify-center p-8 bg-black overflow-hidden">
         <div 
-          className="border-2 border-gray-700 rounded-lg overflow-hidden shadow-2xl bg-black"
-          style={{ 
-            width: '90%',
-            maxWidth: '1200px',
-            aspectRatio: '16/9'
-          }}
+          className="w-full max-w-5xl"
         >
-          {sessionId && (
-            <iframe
-              src={`/view/${sessionId}?t=presenter-preview`}
-              className="w-full h-full border-0"
-              title="Presenter Preview"
-            />
-          )}
+          {/* Aspect ratio container using padding-bottom trick */}
+          <div 
+            className="relative border-2 border-gray-700 rounded-lg overflow-hidden shadow-2xl bg-black"
+            style={{ paddingBottom: '56.25%' }} // 16:9 = 9/16 = 56.25%
+          >
+            {sessionId && (
+              <iframe
+                src={`/view/${sessionId}?t=presenter-preview`}
+                className="absolute top-0 left-0 w-full h-full border-0"
+                title="Presenter Preview"
+              />
+            )}
+          </div>
         </div>
       </main>
 
