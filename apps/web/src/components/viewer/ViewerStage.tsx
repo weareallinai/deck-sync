@@ -12,6 +12,7 @@ import { ReconnectManager } from '@/lib/realtime/reconnect';
 interface ViewerStageProps {
   sessionId: string;
   token: string;
+  isPreview?: boolean;
 }
 
 const COLORS = [
@@ -25,7 +26,7 @@ const COLORS = [
   'bg-teal-500',
 ];
 
-export function ViewerStage({ sessionId, token }: ViewerStageProps) {
+export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStageProps) {
   const [isConnected, setIsConnected] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [colorIndex, setColorIndex] = useState(0);
@@ -295,10 +296,10 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
     }
   };
 
-  const [showDebug, setShowDebug] = useState(true);
+  const [showDebug, setShowDebug] = useState(!isPreview);
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-black">
+    <div className={`flex flex-col bg-black ${isPreview ? 'w-full h-full' : 'h-screen w-screen'}`}>
       {/* Main slide renderer */}
       <div className="flex-1 relative">
         <div className="absolute inset-0 flex items-center justify-center">
@@ -314,7 +315,8 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
         </div>
 
         {/* Connection indicator overlay */}
-        <div className="absolute top-4 right-4 z-50">
+        {!isPreview && (
+          <div className="absolute top-4 right-4 z-50">
           <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full ${isConnected ? 'bg-green-500' : reconnectAttempts > 0 ? 'bg-yellow-500' : 'bg-red-500'}`}>
             <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-white animate-pulse' : 'bg-white'}`} />
             <span className="text-white text-xs font-medium">
@@ -324,16 +326,18 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
         </div>
 
         {/* Debug toggle */}
-        <button
-          onClick={() => setShowDebug(!showDebug)}
-          className="absolute bottom-4 right-4 z-50 px-3 py-1 bg-black bg-opacity-50 text-white text-xs rounded hover:bg-opacity-70"
-        >
-          {showDebug ? 'Hide' : 'Show'} Debug
-        </button>
+        {!isPreview && (
+          <button
+            onClick={() => setShowDebug(!showDebug)}
+            className="absolute bottom-4 right-4 z-50 px-3 py-1 bg-black bg-opacity-50 text-white text-xs rounded hover:bg-opacity-70"
+          >
+            {showDebug ? 'Hide' : 'Show'} Debug
+          </button>
+        )}
       </div>
 
       {/* Event log (debug panel) */}
-      {showDebug && (
+      {showDebug && !isPreview && (
         <div className="h-40 bg-black bg-opacity-90 p-3 overflow-auto border-t border-gray-700">
           <div className="flex items-center justify-between mb-2">
             <h3 className="text-green-400 text-xs font-mono font-bold">EVENT LOG</h3>
