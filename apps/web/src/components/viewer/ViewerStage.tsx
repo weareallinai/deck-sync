@@ -145,6 +145,13 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
   }, [sessionId, token]);
 
   useEffect(() => {
+    // Don't connect until we have a valid sessionId
+    if (!sessionId) {
+      console.log('[Viewer] Waiting for sessionId...');
+      return;
+    }
+
+    console.log('[Viewer] Initializing connection for session:', sessionId);
     connectWebSocket();
 
     return () => {
@@ -156,7 +163,7 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
       pendingEvents.current.forEach(timeout => clearTimeout(timeout));
       pendingEvents.current.clear();
     };
-  }, [connectWebSocket]);
+  }, [connectWebSocket, sessionId]);
 
   const performClockSync = async (ws: WebSocket) => {
     try {
