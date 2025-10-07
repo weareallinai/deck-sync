@@ -11,6 +11,11 @@ export function Toolbar() {
   const currentSlideId = useEditorStore(state => state.currentSlideId);
   const addElement = useEditorStore(state => state.addElement);
   const deck = useEditorStore(state => state.deck);
+  const undo = useEditorStore(state => state.undo);
+  const redo = useEditorStore(state => state.redo);
+  const canUndo = useEditorStore(state => state.canUndo);
+  const canRedo = useEditorStore(state => state.canRedo);
+  const saveHistory = useEditorStore(state => state.saveHistory);
 
   const handleAddText = () => {
     if (!currentSlideId) return;
@@ -33,6 +38,7 @@ export function Toolbar() {
     };
     
     addElement(currentSlideId, newText);
+    saveHistory();
   };
 
   const handleAddShape = (shape: 'rect' | 'ellipse' | 'line') => {
@@ -52,6 +58,7 @@ export function Toolbar() {
     };
     
     addElement(currentSlideId, newShape);
+    saveHistory();
     setShowShapeMenu(false);
   };
 
@@ -72,6 +79,7 @@ export function Toolbar() {
     };
     
     addElement(currentSlideId, newImage);
+    saveHistory();
   };
 
   const handleAddVideo = () => {
@@ -91,6 +99,7 @@ export function Toolbar() {
     };
     
     addElement(currentSlideId, newVideo);
+    saveHistory();
   };
 
   const handleSave = () => {
@@ -105,6 +114,30 @@ export function Toolbar() {
         <span className="text-sm font-semibold text-gray-700">
           {deck?.title || 'Untitled Deck'}
         </span>
+      </div>
+
+      {/* Undo/Redo */}
+      <div className="flex items-center gap-1 mr-2 border-r pr-4">
+        <Button 
+          size="sm" 
+          variant="ghost"
+          onClick={() => undo()}
+          disabled={!canUndo()}
+          title="Undo (Cmd+Z)"
+          className="text-xs"
+        >
+          ↶
+        </Button>
+        <Button 
+          size="sm" 
+          variant="ghost"
+          onClick={() => redo()}
+          disabled={!canRedo()}
+          title="Redo (Cmd+Shift+Z)"
+          className="text-xs"
+        >
+          ↷
+        </Button>
       </div>
 
       {/* Add elements */}

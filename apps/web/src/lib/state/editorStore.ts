@@ -7,9 +7,20 @@ interface EditorState {
   currentSlideId: string | null;
   selectedElementId: string | null;
   
+  // Undo/redo
+  history: { deck: Deck; slides: Map<string, Slide> }[];
+  historyIndex: number;
+  
   // Deck actions
   setDeck: (deck: Deck, slides: Slide[]) => void;
   updateDeckTitle: (title: string) => void;
+  
+  // History actions
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+  saveHistory: () => void;
   
   // Slide actions
   addSlide: () => void;
@@ -37,6 +48,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   slides: new Map(),
   currentSlideId: null,
   selectedElementId: null,
+  history: [],
+  historyIndex: -1,
   
   // Deck actions
   setDeck: (deck, slidesList) => {
@@ -46,8 +59,75 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       deck, 
       slides: slidesMap,
       currentSlideId: slidesList[0]?.id || null,
-      selectedElementId: null
+      selectedElementId: null,
+      history: [{ deck, slides: slidesMap }],
+      historyIndex: 0,
     });
+  },
+  
+  // History actions
+  saveHistory: () => {
+    const state = get();
+    if (!state.deck) return;
+    
+    // Create a deep copy of current state
+    const snapshot = {
+      deck: { ...state.deck },
+      slides: new Map(state.slides),
+    };
+    
+    // Remove any future history if we're not at the end
+    const newHistory = state.history.slice(0, state.historyIndex + 1);
+    newHistory.push(snapshot);
+    
+    // Limit history to 50 items
+    if (newHistory.length > 50) {
+      newHistory.shift();
+    } else {
+      set({ historyIndex: state.historyIndex + 1 });
+    }
+    
+    set({ history: newHistory });
+  },
+  
+  undo: () => {
+    const state = get();
+    if (state.historyIndex <= 0) return;
+    
+    const newIndex = state.historyIndex - 1;
+    const snapshot = state.history[newIndex];
+    
+    set({
+      deck: snapshot.deck,
+      slides: new Map(snapshot.slides),
+      historyIndex: newIndex,
+      selectedElementId: null, // Deselect on undo
+    });
+  },
+  
+  redo: () => {
+    const state = get();
+    if (state.historyIndex >= state.history.length - 1) return;
+    
+    const newIndex = state.historyIndex + 1;
+    const snapshot = state.history[newIndex];
+    
+    set({
+      deck: snapshot.deck,
+      slides: new Map(snapshot.slides),
+      historyIndex: newIndex,
+      selectedElementId: null, // Deselect on redo
+    });
+  },
+  
+  canUndo: () => {
+    const state = get();
+    return state.historyIndex > 0;
+  },
+  
+  canRedo: () => {
+    const state = get();
+    return state.historyIndex < state.history.length - 1;
   },
   
   updateDeckTitle: (title) => set((state) => {

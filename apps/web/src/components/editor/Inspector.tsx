@@ -11,6 +11,7 @@ export function Inspector() {
   const deleteElement = useEditorStore(state => state.deleteElement);
   const duplicateElement = useEditorStore(state => state.duplicateElement);
   const reorderElement = useEditorStore(state => state.reorderElement);
+  const saveHistory = useEditorStore(state => state.saveHistory);
 
   if (!selectedElement || !currentSlideId || !selectedElementId) {
     return (
@@ -30,11 +31,18 @@ export function Inspector() {
   const handleDelete = () => {
     if (confirm('Delete this element?')) {
       deleteElement(currentSlideId, selectedElementId);
+      saveHistory();
     }
   };
 
   const handleDuplicate = () => {
     duplicateElement(currentSlideId, selectedElementId);
+    saveHistory();
+  };
+
+  const handleUpdateAndSave = (updates: any) => {
+    updateElement(currentSlideId, selectedElementId, updates);
+    saveHistory();
   };
 
   return (
@@ -56,6 +64,7 @@ export function Inspector() {
               type="number"
               value={Math.round(selectedElement.x)}
               onChange={(e) => handleUpdate({ x: Number(e.target.value) })}
+              onBlur={() => saveHistory()}
               className="w-full px-2 py-1 text-sm border rounded"
             />
           </div>
@@ -65,6 +74,7 @@ export function Inspector() {
               type="number"
               value={Math.round(selectedElement.y)}
               onChange={(e) => handleUpdate({ y: Number(e.target.value) })}
+              onBlur={() => saveHistory()}
               className="w-full px-2 py-1 text-sm border rounded"
             />
           </div>
@@ -74,6 +84,7 @@ export function Inspector() {
               type="number"
               value={Math.round(selectedElement.w)}
               onChange={(e) => handleUpdate({ w: Number(e.target.value) })}
+              onBlur={() => saveHistory()}
               className="w-full px-2 py-1 text-sm border rounded"
             />
           </div>
@@ -83,6 +94,7 @@ export function Inspector() {
               type="number"
               value={Math.round(selectedElement.h)}
               onChange={(e) => handleUpdate({ h: Number(e.target.value) })}
+              onBlur={() => saveHistory()}
               className="w-full px-2 py-1 text-sm border rounded"
             />
           </div>
@@ -99,6 +111,7 @@ export function Inspector() {
               <textarea
                 value={selectedElement.content}
                 onChange={(e) => handleUpdate({ content: e.target.value })}
+                onBlur={() => saveHistory()}
                 className="w-full px-2 py-1 text-sm border rounded"
                 rows={3}
               />
@@ -109,6 +122,7 @@ export function Inspector() {
                 type="number"
                 value={selectedElement.style.fontSize || 24}
                 onChange={(e) => handleUpdate({ style: { ...selectedElement.style, fontSize: Number(e.target.value) } })}
+                onBlur={() => saveHistory()}
                 className="w-full px-2 py-1 text-sm border rounded"
               />
             </div>
@@ -117,7 +131,7 @@ export function Inspector() {
               <input
                 type="color"
                 value={selectedElement.style.color || '#000000'}
-                onChange={(e) => handleUpdate({ style: { ...selectedElement.style, color: e.target.value } })}
+                onChange={(e) => handleUpdateAndSave({ style: { ...selectedElement.style, color: e.target.value } })}
                 className="w-full h-8 border rounded"
               />
             </div>
@@ -134,7 +148,7 @@ export function Inspector() {
               <input
                 type="color"
                 value={selectedElement.fill || '#cccccc'}
-                onChange={(e) => handleUpdate({ fill: e.target.value })}
+                onChange={(e) => handleUpdateAndSave({ fill: e.target.value })}
                 className="w-full h-8 border rounded"
               />
             </div>
@@ -145,7 +159,7 @@ export function Inspector() {
                   <input
                     type="color"
                     value={selectedElement.stroke.color}
-                    onChange={(e) => handleUpdate({ stroke: { ...selectedElement.stroke, color: e.target.value } })}
+                    onChange={(e) => handleUpdateAndSave({ stroke: { ...selectedElement.stroke, color: e.target.value } })}
                     className="w-full h-8 border rounded"
                   />
                 </div>
@@ -155,6 +169,7 @@ export function Inspector() {
                     type="number"
                     value={selectedElement.stroke.width}
                     onChange={(e) => handleUpdate({ stroke: { ...selectedElement.stroke, width: Number(e.target.value) } })}
+                    onBlur={() => saveHistory()}
                     className="w-full px-2 py-1 text-sm border rounded"
                   />
                 </div>
@@ -171,7 +186,10 @@ export function Inspector() {
           <Button 
             size="sm" 
             variant="ghost" 
-            onClick={() => reorderElement(currentSlideId, selectedElementId, 'front')}
+            onClick={() => {
+              reorderElement(currentSlideId, selectedElementId, 'front');
+              saveHistory();
+            }}
             className="text-xs"
           >
             ⬆️ Front
@@ -179,7 +197,10 @@ export function Inspector() {
           <Button 
             size="sm" 
             variant="ghost" 
-            onClick={() => reorderElement(currentSlideId, selectedElementId, 'back')}
+            onClick={() => {
+              reorderElement(currentSlideId, selectedElementId, 'back');
+              saveHistory();
+            }}
             className="text-xs"
           >
             ⬇️ Back
@@ -187,7 +208,10 @@ export function Inspector() {
           <Button 
             size="sm" 
             variant="ghost" 
-            onClick={() => reorderElement(currentSlideId, selectedElementId, 'forward')}
+            onClick={() => {
+              reorderElement(currentSlideId, selectedElementId, 'forward');
+              saveHistory();
+            }}
             className="text-xs"
           >
             ↑ Forward
@@ -195,7 +219,10 @@ export function Inspector() {
           <Button 
             size="sm" 
             variant="ghost" 
-            onClick={() => reorderElement(currentSlideId, selectedElementId, 'backward')}
+            onClick={() => {
+              reorderElement(currentSlideId, selectedElementId, 'backward');
+              saveHistory();
+            }}
             className="text-xs"
           >
             ↓ Backward

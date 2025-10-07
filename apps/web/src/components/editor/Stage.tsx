@@ -22,6 +22,7 @@ export function Stage() {
   const selectElement = useEditorStore(state => state.selectElement);
   const updateElement = useEditorStore(state => state.updateElement);
   const currentSlideId = useEditorStore(state => state.currentSlideId);
+  const saveHistory = useEditorStore(state => state.saveHistory);
 
   // Calculate scale to fit canvas in viewport
   useEffect(() => {
@@ -89,6 +90,7 @@ export function Stage() {
       x: node.x() / scale, // Un-scale the position
       y: node.y() / scale,
     });
+    saveHistory();
   };
 
   const handleTransformEnd = (elementId: string, e: Konva.KonvaEventObject<Event>) => {
@@ -108,6 +110,7 @@ export function Stage() {
       w: (node.width() * scaleX) / scale,
       h: (node.height() * scaleY) / scale,
     });
+    saveHistory();
   };
 
   const handleTextDoubleClick = (element: SlideElement) => {
@@ -138,6 +141,7 @@ export function Stage() {
     updateElement(currentSlideId, editingTextId, {
       content: textareaValue,
     });
+    saveHistory();
     
     setEditingTextId(null);
     setTextareaValue('');

@@ -11,21 +11,25 @@ export function SidebarSlides() {
   const addSlide = useEditorStore(state => state.addSlide);
   const deleteSlide = useEditorStore(state => state.deleteSlide);
   const duplicateSlide = useEditorStore(state => state.duplicateSlide);
+  const saveHistory = useEditorStore(state => state.saveHistory);
 
   const handleAddSlide = () => {
     addSlide();
+    saveHistory();
   };
 
   const handleDeleteSlide = (slideId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (confirm('Delete this slide?')) {
       deleteSlide(slideId);
+      saveHistory();
     }
   };
 
   const handleDuplicateSlide = (slideId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     duplicateSlide(slideId);
+    saveHistory();
   };
 
   if (!deck) {
