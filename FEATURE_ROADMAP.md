@@ -96,11 +96,12 @@ This document tracks potential features and enhancements for the Deck Sync appli
   - Group transform (move/resize multiple)
   - Bulk actions (delete, duplicate, align)
 
-- [ ] **Slide Background Editing**
-  - Background color picker in Inspector/Slide Properties
-  - Background gradient editor
-  - Background image upload
-  - Preview in thumbnail
+- [x] **Slide Background Editing** ✅
+  - Background color picker in Inspector/Slide Properties ✅
+  - Background gradient editor (simple direction control) ✅
+  - Background image (URL input, R2 upload coming soon) ✅
+  - Preview in thumbnail ✅
+  - Live preview in Inspector ✅
 
 - [x] **Keyboard Shortcuts** ✅
   - Delete key to remove selected element ✅
