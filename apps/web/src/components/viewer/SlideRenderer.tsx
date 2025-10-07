@@ -23,14 +23,11 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
     const updateScale = () => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
-        console.log('[SlideRenderer] Container size:', { width, height });
         
         // Calculate scale to fit 1280x720 content into container
         const scaleX = width / 1280;
         const scaleY = height / 720;
         const newScale = Math.min(scaleX, scaleY);
-        
-        console.log('[SlideRenderer] Scale calculated:', { scaleX, scaleY, newScale });
         
         setScale(newScale);
         
@@ -41,8 +38,6 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
           left: (width - scaledWidth) / 2,
           top: (height - scaledHeight) / 2,
         });
-      } else {
-        console.log('[SlideRenderer] No container ref');
       }
     };
 
@@ -63,8 +58,6 @@ export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
       resizeObserver.disconnect();
     };
   }, []);
-  
-  console.log('[SlideRenderer] Rendering slide:', slide?.id, 'scale:', scale);
   
   if (!slide) {
     return (
