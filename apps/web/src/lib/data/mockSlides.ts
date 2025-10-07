@@ -1,5 +1,22 @@
 import type { Slide, Deck } from '@deck/shared';
 
+// Helper to load from localStorage (for MVP testing persistence)
+export const loadFromStorage = (): { deck: Deck; slides: Slide[] } | null => {
+  if (typeof window === 'undefined') return null;
+  
+  try {
+    const stored = localStorage.getItem('deck-sync-test-deck');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      console.log('[MockSlides] Loaded from localStorage');
+      return parsed;
+    }
+  } catch (e) {
+    console.error('[MockSlides] Failed to load from localStorage:', e);
+  }
+  return null;
+};
+
 // Mock slides for testing
 export const mockSlides: Slide[] = [
   {

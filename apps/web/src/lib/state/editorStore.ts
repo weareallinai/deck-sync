@@ -1,6 +1,17 @@
 import { create } from 'zustand';
 import type { Deck, Slide, Element, Background } from '@deck/shared';
 
+// Helper to persist to localStorage for MVP testing
+const persistToStorage = (deck: Deck, slides: Map<string, Slide>) => {
+  try {
+    const slidesArray = Array.from(slides.values());
+    localStorage.setItem('deck-sync-test-deck', JSON.stringify({ deck, slides: slidesArray }));
+    console.log('[EditorStore] Saved to localStorage');
+  } catch (e) {
+    console.error('[EditorStore] Failed to save to localStorage:', e);
+  }
+};
+
 interface EditorState {
   deck: Deck | null;
   slides: Map<string, Slide>; // slideId -> Slide
@@ -65,60 +76,67 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
   
-  // History actions
-  saveHistory: () => {
-    const state = get();
-    if (!state.deck) return;
-    
-    // Create a deep copy of current state
-    const snapshot = {
-      deck: { ...state.deck },
-      slides: new Map(state.slides),
-    };
-    
-    // Remove any future history if we're not at the end
-    const newHistory = state.history.slice(0, state.historyIndex + 1);
-    newHistory.push(snapshot);
-    
-    // Limit history to 50 items
-    if (newHistory.length > 50) {
-      newHistory.shift();
-    } else {
-      set({ historyIndex: state.historyIndex + 1 });
-    }
-    
-    set({ history: newHistory });
-  },
+      // History actions
+      saveHistory: () => {
+        const state = get();
+        if (!state.deck) return;
+        
+        // Create a deep copy of current state
+        const snapshot = {
+          deck: { ...state.deck },
+          slides: new Map(state.slides),
+        };
+        
+        // Remove any future history if we're not at the end
+        const newHistory = state.history.slice(0, state.historyIndex + 1);
+        newHistory.push(snapshot);
+        
+        // Limit history to 50 items
+        if (newHistory.length > 50) {
+          newHistory.shift();
+        } else {
+          set({ historyIndex: state.historyIndex + 1 });
+        }
+        
+        set({ history: newHistory });
+        
+        // Persist to localStorage for MVP testing
+        persistToStorage(state.deck, state.slides);
+      },
   
-  undo: () => {
-    const state = get();
-    if (state.historyIndex <= 0) return;
-    
-    const newIndex = state.historyIndex - 1;
-    const snapshot = state.history[newIndex];
-    
-    set({
-      deck: snapshot.deck,
-      slides: new Map(snapshot.slides),
-      historyIndex: newIndex,
-      selectedElementId: null, // Deselect on undo
-    });
-  },
+      undo: () => {
+        const state = get();
+        if (state.historyIndex <= 0) return;
+        
+        const newIndex = state.historyIndex - 1;
+        const snapshot = state.history[newIndex];
+        
+        set({
+          deck: snapshot.deck,
+          slides: new Map(snapshot.slides),
+          historyIndex: newIndex,
+          selectedElementId: null, // Deselect on undo
+        });
+        
+        persistToStorage(snapshot.deck, snapshot.slides);
+      },
   
-  redo: () => {
-    const state = get();
-    if (state.historyIndex >= state.history.length - 1) return;
-    
-    const newIndex = state.historyIndex + 1;
-    const snapshot = state.history[newIndex];
-    
-    set({
-      deck: snapshot.deck,
-      slides: new Map(snapshot.slides),
-      historyIndex: newIndex,
-      selectedElementId: null, // Deselect on redo
-    });
-  },
+      redo: () => {
+        const state = get();
+        if (state.historyIndex >= state.history.length - 1) return;
+        
+        const newIndex = state.historyIndex + 1;
+        const snapshot = state.history[newIndex];
+        
+        set({
+          deck: snapshot.deck,
+          slides: new Map(snapshot.slides),
+          historyIndex: newIndex,
+          selectedElementId: null, // Deselect on redo
+        });
+        
+        persistToStorage(snapshot.deck, snapshot.slides);
+      },
   
   canUndo: () => {
     const state = get();

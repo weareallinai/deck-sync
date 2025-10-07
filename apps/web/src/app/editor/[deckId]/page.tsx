@@ -7,7 +7,7 @@ import { Inspector } from '@/components/editor/Inspector';
 import { AnimationsPanel } from '@/components/editor/AnimationsPanel';
 import { useEditorStore } from '@/lib/state/editorStore';
 import { useEffect, useState, useCallback } from 'react';
-import { mockDeck, mockSlides } from '@/lib/data/mockSlides';
+import { mockDeck, mockSlides, loadFromStorage } from '@/lib/data/mockSlides';
 
 export default function EditorPage({ params }: { params: Promise<{ deckId: string }> }) {
   const [deckId, setDeckId] = useState<string>('');
@@ -33,9 +33,17 @@ export default function EditorPage({ params }: { params: Promise<{ deckId: strin
     params.then(p => {
       setDeckId(p.deckId);
       
-      // Load mock data for now
-      // TODO: Replace with actual API call
-      setDeck(mockDeck, mockSlides);
+      // Try to load from localStorage first (for MVP testing persistence)
+      const stored = loadFromStorage();
+      if (stored) {
+        console.log('[EditorPage] Loading from localStorage');
+        setDeck(stored.deck, stored.slides);
+      } else {
+        // Load mock data for now
+        // TODO: Replace with actual API call
+        console.log('[EditorPage] Loading from mockSlides');
+        setDeck(mockDeck, mockSlides);
+      }
       setIsReady(true);
     });
   }, [params, setDeck]);

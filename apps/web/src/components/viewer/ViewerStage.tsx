@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { SlideRenderer } from './SlideRenderer';
-import { mockSlides } from '@/lib/data/mockSlides';
+import { mockSlides, loadFromStorage } from '@/lib/data/mockSlides';
 import { preloadManager } from '@/lib/render/preload';
 import { ReconnectManager } from '@/lib/realtime/reconnect';
+import type { Slide } from '@deck/shared';
 
 // GUARDRAIL: Viewer component must NOT import Konva or editor dependencies
 // GUARDRAIL: Use only CSS transforms/opacity for animations
@@ -33,6 +34,7 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
   const [currentSlideId, setCurrentSlideId] = useState<string | null>('slide-1'); // Initialize to first slide
   const [events, setEvents] = useState<string[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
+  const [slides, setSlides] = useState<Slide[]>(mockSlides);
 
   const [clockOffset, setClockOffset] = useState(0);
   const [reconnectAttempts, setReconnectAttempts] = useState(0);
@@ -50,6 +52,15 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
   useEffect(() => {
     clockOffsetRef.current = clockOffset;
   }, [clockOffset]);
+
+  // Load slides from localStorage if available (for MVP testing)
+  useEffect(() => {
+    const stored = loadFromStorage();
+    if (stored) {
+      console.log('[ViewerStage] Loading slides from localStorage');
+      setSlides(stored.slides);
+    }
+  }, []);
 
   const connectWebSocket = useCallback(async () => {
     const wsUrl = process.env.NEXT_PUBLIC_WS_BASE || 'ws://localhost:8787';
@@ -272,8 +283,8 @@ export function ViewerStage({ sessionId, token, isPreview = false }: ViewerStage
     ]);
   };
 
-  // Get current slide from mock data
-  const currentSlide = mockSlides.find(s => s.id === currentSlideId) || mockSlides[0];
+  // Get current slide from loaded data
+  const currentSlide = slides.find(s => s.id === currentSlideId) || slides[0];
 
   // Preload next slide
   useEffect(() => {
