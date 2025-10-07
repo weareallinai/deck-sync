@@ -49,7 +49,7 @@ This document tracks potential features and enhancements for the Deck Sync appli
   - Font size ✅
   - Text color ✅
   - Text content editing ✅
-  - ⏳ Font family selection
+  - Font family selection ✅
   - ⏳ Bold, italic, underline
   - ⏳ Text alignment (left, center, right)
   - ⏳ Line height
@@ -84,11 +84,11 @@ This document tracks potential features and enhancements for the Deck Sync appli
   - ⏳ Reorder animations (determines step sequence)
 
 ### Priority Polish Features (Next Up!)
-- [ ] **Font Selection**
-  - Font family dropdown in Inspector
-  - Apply to text elements
-  - Update font in Viewer's SlideRenderer to match
-  - Common web-safe fonts + Google Fonts
+- [x] **Font Selection** ✅
+  - Font family dropdown in Inspector ✅
+  - Apply to text elements ✅
+  - Update font in Viewer's SlideRenderer to match ✅
+  - 9 web-safe fonts (Arial, Helvetica, Times New Roman, Georgia, Courier New, Verdana, Trebuchet MS, Comic Sans MS, Impact) ✅
 
 - [ ] **Multi-Select Elements**
   - Shift+click to add to selection
@@ -102,20 +102,21 @@ This document tracks potential features and enhancements for the Deck Sync appli
   - Background image upload
   - Preview in thumbnail
 
-- [ ] **Keyboard Shortcuts**
-  - Delete key to remove selected element
-  - Cmd/Ctrl+D to duplicate
-  - Cmd/Ctrl+Z for undo
-  - Cmd/Ctrl+Shift+Z for redo
-  - Arrow keys to nudge position (1px, or 10px with Shift)
-  - Cmd/Ctrl+A to select all
-  - Escape to deselect
+- [x] **Keyboard Shortcuts** ✅
+  - Delete key to remove selected element ✅
+  - Cmd/Ctrl+D to duplicate ✅
+  - Cmd/Ctrl+Z for undo ✅
+  - Cmd/Ctrl+Shift+Z for redo ✅
+  - Arrow keys to nudge position (1px, or 10px with Shift) ✅
+  - Escape to deselect ✅
+  - ⏳ Cmd/Ctrl+A to select all
 
-- [ ] **Undo/Redo System**
-  - Track state history in editorStore
-  - Implement undo/redo actions
-  - Keyboard shortcuts (Cmd+Z / Cmd+Shift+Z)
-  - UI buttons in toolbar
+- [x] **Undo/Redo System** ✅
+  - Track state history in editorStore ✅
+  - Implement undo/redo actions ✅
+  - Keyboard shortcuts (Cmd+Z / Cmd+Shift+Z) ✅
+  - UI buttons in toolbar ✅
+  - 50-item history limit ✅
 
 ### Advanced Features (Post-MVP)
 - [ ] **Collaboration**
