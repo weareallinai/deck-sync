@@ -175,13 +175,17 @@ export function Stage() {
         {/* Background layer (for gradients and images) */}
         <div
           className="absolute inset-0"
-          style={{
-            background: currentSlide.bg.type === 'color' ? currentSlide.bg.value :
-                       currentSlide.bg.type === 'gradient' ? currentSlide.bg.value :
-                       `url(${currentSlide.bg.value})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
+          style={
+            currentSlide.bg.type === 'color' ? {
+              backgroundColor: currentSlide.bg.value,
+            } : currentSlide.bg.type === 'gradient' ? {
+              backgroundImage: currentSlide.bg.value,
+            } : {
+              backgroundImage: `url(${currentSlide.bg.value})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }
+          }
         />
         
         <KonvaStage
