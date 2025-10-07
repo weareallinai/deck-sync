@@ -13,12 +13,10 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
   useEffect(() => {
     // Extract token after mount to avoid hydration mismatch
     const t = extractViewerToken();
-    console.log('[ViewPage] Token extracted:', t);
     setToken(t);
     setIsPreview(t === 'presenter-preview');
     
     params.then(p => {
-      console.log('[ViewPage] Session ID resolved:', p.sessionId);
       setSessionId(p.sessionId);
       setReady(true);
     });
@@ -27,9 +25,7 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
   // Show consistent loading state during SSR and initial client render
   if (!ready) {
     return (
-      <div className="w-full h-full bg-black" style={{ minHeight: '100vh' }}>
-        {token && <div className="text-white text-xs p-2">Loading session...</div>}
-      </div>
+      <div className="w-full h-full bg-black" style={{ minHeight: '100vh' }} />
     );
   }
 
@@ -45,8 +41,6 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
       </div>
     );
   }
-
-  console.log('[ViewPage] Rendering ViewerStage with:', { sessionId, token, isPreview });
 
   // GUARDRAIL: Viewer page imports NO editor dependencies (Konva, etc.)
   return (
