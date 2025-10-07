@@ -120,7 +120,10 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
     };
 
     ws.onerror = (error) => {
-      console.error('[Viewer] WebSocket error:', error);
+      // Only log meaningful errors (not connection close events)
+      if (error && typeof error === 'object' && Object.keys(error).length > 0) {
+        console.error('[Viewer] WebSocket error:', error);
+      }
       setIsConnected(false);
     };
 

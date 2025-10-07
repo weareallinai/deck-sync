@@ -95,13 +95,15 @@ export default function PresentPage({ params }: { params: Promise<{ sessionId: s
   return (
     <div className="flex h-screen bg-gray-900">
       {/* Main preview */}
-      <main className="flex-1 flex items-center justify-center p-8">
-        <div className="bg-white rounded-lg shadow-2xl aspect-video w-full max-w-5xl">
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
-            <h2 className="text-2xl mb-4">Presenter Preview</h2>
-            <p className="text-sm">Session: {sessionId}</p>
-            <p className="text-sm">Current Step: {currentStep}</p>
-          </div>
+      <main className="flex-1 flex items-center justify-center p-8 bg-black">
+        <div className="aspect-video w-full max-w-5xl border-2 border-gray-700 rounded-lg overflow-hidden shadow-2xl">
+          {sessionId && (
+            <iframe
+              src={`/view/${sessionId}?t=presenter-preview`}
+              className="w-full h-full"
+              title="Presenter Preview"
+            />
+          )}
         </div>
       </main>
 
