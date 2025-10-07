@@ -3,15 +3,17 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Slide, Element as SlideElement } from '@deck/shared';
 import { getTransitionConfig } from '@/lib/render/transitions';
+import { VideoPlayer } from './VideoPlayer';
 
 // GUARDRAIL: Use only transform/opacity (GPU accelerated)
 
 interface SlideRendererProps {
   slide: Slide | null;
   step: number;
+  onVideoEnd?: () => void;
 }
 
-export function SlideRenderer({ slide, step }: SlideRendererProps) {
+export function SlideRenderer({ slide, step, onVideoEnd }: SlideRendererProps) {
   if (!slide) {
     return (
       <div className="w-full h-full flex items-center justify-center bg-gray-900">
@@ -52,6 +54,7 @@ export function SlideRenderer({ slide, step }: SlideRendererProps) {
             element={element}
             index={index}
             step={step}
+            onVideoEnd={onVideoEnd}
           />
         ))}
       </motion.div>
@@ -63,9 +66,10 @@ interface ElementRendererProps {
   element: SlideElement;
   index: number;
   step: number;
+  onVideoEnd?: () => void;
 }
 
-function ElementRenderer({ element, index, step }: ElementRendererProps) {
+function ElementRenderer({ element, index, step, onVideoEnd }: ElementRendererProps) {
   // Determine if this element should be visible based on step
   const isVisible = index <= step;
 
@@ -132,20 +136,19 @@ function ElementRenderer({ element, index, step }: ElementRendererProps) {
       );
 
     case 'video':
-      // Video will be handled in step 9
       return (
         <motion.div
           {...animationProps}
           style={{
             ...style,
-            backgroundColor: '#000',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#fff',
+            overflow: 'hidden',
           }}
         >
-          Video Placeholder
+          <VideoPlayer
+            element={element}
+            isVisible={isVisible}
+            onVideoEnd={onVideoEnd}
+          />
         </motion.div>
       );
 

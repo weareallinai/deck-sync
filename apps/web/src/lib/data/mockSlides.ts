@@ -206,6 +206,43 @@ export const mockSlides: Slide[] = [
     ],
     transition: { kind: 'fade', durationMs: 300 },
   },
+  {
+    id: 'slide-5',
+    deckId: 'demo-deck',
+    index: 4,
+    bg: { type: 'color', value: '#0891b2' }, // Cyan
+    elements: [
+      {
+        id: 'el-12',
+        type: 'text',
+        content: 'Video Demo (with after-media advance)',
+        x: 100,
+        y: 50,
+        w: 1080,
+        h: 80,
+        z: 1,
+        style: {
+          fontSize: 42,
+          fontWeight: 700,
+          color: '#ffffff',
+          align: 'center',
+        },
+      },
+      {
+        id: 'el-13',
+        type: 'video',
+        src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+        x: 190,
+        y: 160,
+        w: 900,
+        h: 506,
+        z: 2,
+        loop: false,
+      },
+    ],
+    transition: { kind: 'fade', durationMs: 300 },
+    advance: { type: 'after-media' },
+  },
 ];
 
 export const mockDeck: Deck = {

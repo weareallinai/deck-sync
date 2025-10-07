@@ -228,6 +228,29 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
     }
   }, [currentSlide]);
 
+  // Handle after-media advance
+  const handleVideoEnd = () => {
+    if (currentSlide?.advance?.type === 'after-media') {
+      addEvent('Video ended - auto-advancing...');
+      console.log('[Viewer] After-media advance triggered');
+      
+      // Auto-advance to next slide (simulate NEXT_STEP)
+      // In a real implementation, this might send a message to coordinator
+      // For now, just advance locally as if we received an event
+      setTimeout(() => {
+        setCurrentStep(prev => prev + 1);
+        setColorIndex(prev => (prev + 1) % COLORS.length);
+        
+        // Move to next slide if this was the last element
+        const nextSlideIndex = currentSlide.index + 1;
+        if (nextSlideIndex < mockSlides.length) {
+          setCurrentSlideId(mockSlides[nextSlideIndex].id);
+          setCurrentStep(0);
+        }
+      }, 500); // Small delay for smooth transition
+    }
+  };
+
   const [showDebug, setShowDebug] = useState(true);
 
   return (
@@ -236,7 +259,11 @@ export function ViewerStage({ sessionId, token }: ViewerStageProps) {
       <div className="flex-1 relative">
         <div className="absolute inset-0 flex items-center justify-center bg-black">
           <div className="w-full h-full max-w-[1280px] max-h-[720px] aspect-video">
-            <SlideRenderer slide={currentSlide} step={currentStep} />
+            <SlideRenderer 
+              slide={currentSlide} 
+              step={currentStep}
+              onVideoEnd={handleVideoEnd}
+            />
           </div>
         </div>
 
