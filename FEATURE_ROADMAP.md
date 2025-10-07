@@ -7,72 +7,115 @@ This document tracks potential features and enhancements for the Deck Sync appli
 ## 🎨 EDITOR
 
 ### Core Editing (MVP)
-- [ ] **Deck Management**
-  - Create new deck
-  - Load existing deck
-  - Save deck (auto-save + manual)
-  - Delete deck
-  - Duplicate deck
-  - Deck metadata (title, description, author, created/modified dates)
+- [x] **Deck Management**
+  - Load existing deck (mock data)
+  - Deck metadata display (title)
+  - ⏳ Create new deck
+  - ⏳ Save deck (auto-save + manual)
+  - ⏳ Delete deck
+  - ⏳ Duplicate deck
+  - ⏳ Deck metadata editing (description, author, dates)
 
-- [ ] **Slide Management**
-  - Add new slide
-  - Delete slide
-  - Duplicate slide
-  - Reorder slides (drag-and-drop in sidebar)
-  - Slide thumbnails in sidebar
-  - Navigate between slides
+- [x] **Slide Management**
+  - Add new slide ✅
+  - Delete slide ✅
+  - Duplicate slide ✅
+  - Slide thumbnails in sidebar ✅
+  - Navigate between slides ✅
+  - ⏳ Reorder slides (drag-and-drop in sidebar)
 
-- [ ] **Element Management**
-  - Add text elements
-  - Add shape elements (rectangle, circle, line)
-  - Add image elements (upload + R2 storage)
-  - Add video elements (upload + R2 storage)
-  - Select/deselect elements
-  - Move elements (drag)
-  - Resize elements (handles)
-  - Delete elements
-  - Duplicate elements
-  - Z-index control (bring forward/send backward)
-  - Multi-select elements
+- [x] **Element Management**
+  - Add text elements ✅
+  - Add shape elements (rectangle, circle, line) ✅
+  - Add image elements (placeholder) ✅
+  - Add video elements (placeholder) ✅
+  - Select/deselect elements ✅
+  - Move elements (drag) ✅
+  - Resize elements (handles) ✅
+  - Delete elements ✅
+  - Duplicate elements ✅
+  - Z-index control (bring forward/send backward) ✅
+  - ⏳ Multi-select elements (Shift+click, drag-select box)
 
-- [ ] **Canvas Layer (Konva)**
-  - 1280x720 canvas
-  - Drawing tools for shapes
-  - Selection tool
-  - Snap-to-grid
-  - Rulers and guides
+- [x] **Canvas Layer (Konva)**
+  - 1280x720 canvas ✅
+  - Selection tool ✅
+  - Transform handles (resize/rotate) ✅
+  - ⏳ Snap-to-grid
+  - ⏳ Rulers and guides
 
-- [ ] **Text Editing**
-  - Font family selection
-  - Font size
-  - Bold, italic, underline
-  - Text color
-  - Text alignment (left, center, right)
-  - Line height
-  - Letter spacing
+- [x] **Text Editing**
+  - Double-click to edit ✅
+  - Font size ✅
+  - Text color ✅
+  - Text content editing ✅
+  - ⏳ Font family selection
+  - ⏳ Bold, italic, underline
+  - ⏳ Text alignment (left, center, right)
+  - ⏳ Line height
+  - ⏳ Letter spacing
 
-- [ ] **Element Properties**
-  - Position (x, y)
-  - Size (width, height)
-  - Rotation
-  - Opacity
-  - Background color
-  - Border (color, width, style)
-  - Shadow effects
+- [x] **Element Properties**
+  - Position (x, y) ✅
+  - Size (width, height) ✅
+  - Color (fill) ✅
+  - ⏳ Rotation
+  - ⏳ Opacity
+  - ⏳ Border (color, width, style)
+  - ⏳ Shadow effects
+
+- [ ] **Slide Properties**
+  - ⏳ Background color picker
+  - ⏳ Background gradient
+  - ⏳ Background image upload
+  - ⏳ Slide notes
 
 - [ ] **Slide Transitions**
-  - Select transition type (fade, slide, none)
-  - Transition duration
-  - Transition easing
+  - ⏳ Select transition type (fade, slide, none)
+  - ⏳ Transition duration
+  - ⏳ Transition easing
 
 - [ ] **Animations Panel**
-  - Add animation to element
-  - Set animation type (fade-in, slide-in, zoom-in, etc.)
-  - Set animation trigger (on-step, on-load)
-  - Animation duration
-  - Animation delay
-  - Reorder animations (determines step sequence)
+  - ⏳ Add animation to element
+  - ⏳ Set animation type (fade-in, slide-in, zoom-in, etc.)
+  - ⏳ Set animation trigger (on-step, on-load)
+  - ⏳ Animation duration
+  - ⏳ Animation delay
+  - ⏳ Reorder animations (determines step sequence)
+
+### Priority Polish Features (Next Up!)
+- [ ] **Font Selection**
+  - Font family dropdown in Inspector
+  - Apply to text elements
+  - Update font in Viewer's SlideRenderer to match
+  - Common web-safe fonts + Google Fonts
+
+- [ ] **Multi-Select Elements**
+  - Shift+click to add to selection
+  - Drag-select box on canvas
+  - Group transform (move/resize multiple)
+  - Bulk actions (delete, duplicate, align)
+
+- [ ] **Slide Background Editing**
+  - Background color picker in Inspector/Slide Properties
+  - Background gradient editor
+  - Background image upload
+  - Preview in thumbnail
+
+- [ ] **Keyboard Shortcuts**
+  - Delete key to remove selected element
+  - Cmd/Ctrl+D to duplicate
+  - Cmd/Ctrl+Z for undo
+  - Cmd/Ctrl+Shift+Z for redo
+  - Arrow keys to nudge position (1px, or 10px with Shift)
+  - Cmd/Ctrl+A to select all
+  - Escape to deselect
+
+- [ ] **Undo/Redo System**
+  - Track state history in editorStore
+  - Implement undo/redo actions
+  - Keyboard shortcuts (Cmd+Z / Cmd+Shift+Z)
+  - UI buttons in toolbar
 
 ### Advanced Features (Post-MVP)
 - [ ] **Collaboration**
