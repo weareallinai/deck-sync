@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint-and-typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: TypeScript check
+        run: cd apps/web && pnpm exec tsc --noEmit
+      
+      - name: Lint
+        run: cd apps/web && pnpm lint
+
+  bundle-size:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Build
+        run: cd apps/web && pnpm build
+        env:
+          DATABASE_URL: "postgres://dummy:dummy@localhost:5432/dummy"
+          JWT_SECRET: "test-secret"
+      
+      - name: Check bundle size (GUARDRAIL)
+        run: cd apps/web && pnpm bundle-check
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Install Playwright
+        run: cd apps/web && pnpm exec playwright install --with-deps
+      
+      - name: Run E2E tests
+        run: cd apps/web && pnpm test:e2e
+        env:
+          DATABASE_URL: "postgres://dummy:dummy@localhost:5432/dummy"
+          JWT_SECRET: "test-secret"
+
