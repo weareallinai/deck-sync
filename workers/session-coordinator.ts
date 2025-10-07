@@ -1,215 +1,215 @@
-import type { WSMessage, WSCommand, WSEvent, Session } from '@deck/shared';
-import { WSMessageSchema } from '@deck/shared';
+/**
+ * Cloudflare Durable Object: Session Coordinator
+ * Handles WebSocket connections for real-time presentation sync
+ */
 
-interface SessionState {
-  seq: number;
-  status: Session['status'];
-  slideId: string | null;
-  step: number;
-  deckId: string;
-  clients: Map<string, WebSocket>;
-  presenterId: string | null;
-  rttSamples: number[];
+export interface Env {
+  SESSION_COORDINATOR: DurableObjectNamespace;
+}
+
+interface ClientInfo {
+  role: 'presenter' | 'viewer';
+  ws: WebSocket;
 }
 
 export class SessionCoordinator {
-  private state: SessionState;
-  private env: any;
+  private state: DurableObjectState;
+  private env: Env;
+  private clients: Map<string, ClientInfo>;
+  private seq: number;
+  private currentStep: number;
+  private currentSlideId: string | null;
+  private presenterId: string | null;
 
-  constructor(state: DurableObjectState, env: any) {
-    this.state = {
-      seq: 0,
-      status: 'idle',
-      slideId: null,
-      step: 0,
-      deckId: '',
-      clients: new Map(),
-      presenterId: null,
-      rttSamples: [],
-    };
+  constructor(state: DurableObjectState, env: Env) {
+    this.state = state;
     this.env = env;
+    this.clients = new Map();
+    this.seq = 0;
+    this.currentStep = 0;
+    this.currentSlideId = null;
+    this.presenterId = null;
   }
 
   async fetch(request: Request): Promise<Response> {
+    // Handle WebSocket upgrade
     const upgradeHeader = request.headers.get('Upgrade');
     if (!upgradeHeader || upgradeHeader !== 'websocket') {
       return new Response('Expected WebSocket', { status: 426 });
     }
 
+    // Create WebSocket pair
     const pair = new WebSocketPair();
     const [client, server] = Object.values(pair);
 
-    await this.handleWebSocket(server);
+    // Accept and handle the server-side WebSocket
+    this.handleWebSocket(server as WebSocket);
 
+    // Return the client-side WebSocket
     return new Response(null, {
       status: 101,
       webSocket: client,
     });
   }
 
-  async handleWebSocket(ws: WebSocket) {
+  private handleWebSocket(ws: WebSocket) {
     ws.accept();
 
     const clientId = crypto.randomUUID();
-    let role: 'presenter' | 'viewer' | null = null;
+    console.log(`[Coordinator] Client connected: ${clientId}`);
 
-    ws.addEventListener('message', async (event) => {
+    let clientRole: 'presenter' | 'viewer' | null = null;
+
+    ws.addEventListener('message', (event: MessageEvent) => {
       try {
-        const message = JSON.parse(event.data as string) as WSMessage;
-        const validated = WSMessageSchema.parse(message);
+        const data = typeof event.data === 'string' ? event.data : event.data.toString();
+        const message = JSON.parse(data);
 
-        switch (validated.t) {
+        console.log(`[Coordinator] Received from ${clientId}:`, message.t);
+
+        switch (message.t) {
           case 'HELLO':
-            role = validated.role;
-            if (role === 'presenter') {
-              this.state.presenterId = clientId;
+            // Register client
+            clientRole = message.role;
+            this.clients.set(clientId, { role: clientRole, ws });
+            
+            if (clientRole === 'presenter') {
+              this.presenterId = clientId;
+              console.log(`[Coordinator] Presenter registered: ${clientId}`);
             }
-            this.state.clients.set(clientId, ws);
-            this.sendState(ws);
-            break;
 
-          case 'CMD':
-            if (role === 'presenter') {
-              this.handleCommand(validated);
-            }
-            break;
-
-          case 'PING':
-            this.sendMessage(ws, {
-              t: 'PONG',
-              clientTime: validated.clientTime,
+            // Send current state
+            this.sendToClient(ws, {
+              t: 'STATE',
+              seq: this.seq,
+              slideId: this.currentSlideId,
+              step: this.currentStep,
               serverTime: Date.now(),
             });
             break;
+
+          case 'PING':
+            // Echo back PONG with server timestamp
+            this.sendToClient(ws, {
+              t: 'PONG',
+              ts: Date.now(),
+            });
+            break;
+
+          case 'CMD':
+            // Only presenter can send commands
+            if (clientRole === 'presenter') {
+              this.handleCommand(message);
+            } else {
+              console.warn(`[Coordinator] Non-presenter tried to send command: ${clientId}`);
+            }
+            break;
         }
       } catch (error) {
-        console.error('[SessionCoordinator] Message error:', error);
+        console.error(`[Coordinator] Error handling message from ${clientId}:`, error);
       }
     });
 
     ws.addEventListener('close', () => {
-      this.state.clients.delete(clientId);
-      if (clientId === this.state.presenterId) {
-        this.state.presenterId = null;
+      console.log(`[Coordinator] Client disconnected: ${clientId}`);
+      this.clients.delete(clientId);
+      
+      if (clientId === this.presenterId) {
+        this.presenterId = null;
+        console.log('[Coordinator] Presenter disconnected');
       }
     });
 
-    ws.addEventListener('error', (event) => {
-      console.error('[SessionCoordinator] WebSocket error:', event);
+    ws.addEventListener('error', (event: Event) => {
+      console.error(`[Coordinator] WebSocket error for ${clientId}:`, event);
     });
   }
 
-  private handleCommand(cmd: WSCommand) {
-    this.state.seq += 1;
+  private handleCommand(cmd: any) {
+    this.seq += 1;
 
-    const guardMs = this.estimateGuard();
-    const applyAt = Date.now() + guardMs;
-
-    const event: WSEvent = {
-      t: 'EVT',
-      seq: this.state.seq,
-      cmd: cmd.cmd,
-      payload: cmd.payload,
-      applyAt,
-    };
-
-    // Update state
-    this.reduceState(event);
-
-    // Broadcast to all clients
-    this.broadcast(event);
-  }
-
-  private reduceState(event: WSEvent) {
-    switch (event.cmd) {
+    // Update state based on command
+    switch (cmd.cmd) {
       case 'START':
-        this.state.status = 'running';
-        this.state.slideId = (event.payload as any)?.slideId || this.state.slideId;
-        this.state.step = 0;
-        break;
-
-      case 'PAUSE':
-        this.state.status = 'paused';
-        break;
-
-      case 'RESUME':
-        this.state.status = 'running';
-        break;
-
-      case 'STOP':
-        this.state.status = 'ended';
+        console.log('[Coordinator] START command');
+        this.currentStep = 0;
+        this.currentSlideId = cmd.slideId || 'slide-1';
         break;
 
       case 'NEXT_STEP':
-        this.state.step += 1;
+        console.log('[Coordinator] NEXT_STEP command');
+        this.currentStep += 1;
         break;
 
       case 'PREV_STEP':
-        this.state.step = Math.max(0, this.state.step - 1);
+        console.log('[Coordinator] PREV_STEP command');
+        this.currentStep = Math.max(0, this.currentStep - 1);
         break;
 
       case 'JUMP_SLIDE':
-        this.state.slideId = (event.payload as any)?.slideId;
-        this.state.step = 0;
-        break;
-
-      case 'RESTART_SLIDE':
-        this.state.step = 0;
+        console.log(`[Coordinator] JUMP_SLIDE to ${cmd.slideId}`);
+        this.currentSlideId = cmd.slideId;
+        this.currentStep = 0;
         break;
     }
+
+    // Broadcast event to all clients
+    const guardMs = 50; // Simple 50ms guard for MVP
+    const applyAt = Date.now() + guardMs;
+
+    const event = {
+      t: 'EVT',
+      seq: this.seq,
+      cmd: cmd.cmd,
+      slideId: cmd.slideId,
+      applyAt,
+    };
+
+    console.log(`[Coordinator] Broadcasting event (seq=${this.seq}):`, event);
+    this.broadcast(event);
   }
 
-  private broadcast(message: WSMessage) {
+  private broadcast(message: any) {
     const json = JSON.stringify(message);
-    for (const [clientId, ws] of this.state.clients.entries()) {
+    let sent = 0;
+    let failed = 0;
+
+    for (const [clientId, info] of this.clients.entries()) {
       try {
-        ws.send(json);
+        info.ws.send(json);
+        sent++;
       } catch (error) {
-        console.error(`[SessionCoordinator] Failed to send to ${clientId}:`, error);
-        this.state.clients.delete(clientId);
+        console.error(`[Coordinator] Failed to send to ${clientId}:`, error);
+        this.clients.delete(clientId);
+        failed++;
       }
     }
+
+    console.log(`[Coordinator] Broadcast complete: ${sent} sent, ${failed} failed`);
   }
 
-  private sendMessage(ws: WebSocket, message: WSMessage) {
+  private sendToClient(ws: WebSocket, message: any) {
     try {
       ws.send(JSON.stringify(message));
     } catch (error) {
-      console.error('[SessionCoordinator] Failed to send message:', error);
+      console.error('[Coordinator] Failed to send to client:', error);
     }
-  }
-
-  private sendState(ws: WebSocket) {
-    this.sendMessage(ws, {
-      t: 'STATE',
-      seq: this.state.seq,
-      slideId: this.state.slideId,
-      step: this.state.step,
-      status: this.state.status,
-      serverTime: Date.now(),
-    });
-  }
-
-  private estimateGuard(): number {
-    // Use median RTT / 2 + 30ms, clamped to [50, 150]ms
-    if (this.state.rttSamples.length === 0) {
-      return 50;
-    }
-
-    const sorted = [...this.state.rttSamples].sort((a, b) => a - b);
-    const mid = Math.floor(sorted.length / 2);
-    const medianRTT = sorted.length % 2 === 0
-      ? (sorted[mid - 1] + sorted[mid]) / 2
-      : sorted[mid];
-
-    const guard = medianRTT / 2 + 30;
-    return Math.max(50, Math.min(150, guard));
   }
 }
 
+// Worker entry point
 export default {
-  async fetch(request: Request, env: any) {
-    return new Response('Session Coordinator Worker', { status: 200 });
+  async fetch(request: Request, env: Env): Promise<Response> {
+    // Extract session ID from URL
+    const url = new URL(request.url);
+    const sessionId = url.pathname.split('/').pop() || 'default';
+
+    // Get Durable Object for this session
+    const id = env.SESSION_COORDINATOR.idFromName(sessionId);
+    const stub = env.SESSION_COORDINATOR.get(id);
+
+    // Forward request to Durable Object
+    return stub.fetch(request);
   },
 };
 
