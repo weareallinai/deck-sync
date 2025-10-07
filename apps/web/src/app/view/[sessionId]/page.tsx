@@ -42,11 +42,11 @@ export default function ViewPage({ params }: { params: Promise<{ sessionId: stri
     );
   }
 
-  // GUARDRAIL: Viewer page imports NO editor dependencies (Konva, etc.)
-  return (
-    <div className={isPreview ? 'w-full h-full bg-black' : 'h-screen w-screen bg-black'}>
-      <ViewerStage sessionId={sessionId} token={token} isPreview={isPreview} />
-    </div>
-  );
-}
+    // GUARDRAIL: Viewer page imports NO editor dependencies (Konva, etc.)
+    return (
+      <div className="h-screen w-screen bg-black">
+        <ViewerStage sessionId={sessionId} token={token} isPreview={isPreview} />
+      </div>
+    );
+  }
 
