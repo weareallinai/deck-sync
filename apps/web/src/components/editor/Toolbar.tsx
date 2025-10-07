@@ -4,6 +4,8 @@ import { Button } from '@deck/ui';
 import { useEditorStore } from '@/lib/state/editorStore';
 import { useState } from 'react';
 import type { TextEl, ShapeEl, ImageEl, VideoEl } from '@deck/shared';
+import { parseVideoUrl } from '@/lib/utils/video';
+import { DEFAULT_FONT } from '@/lib/utils/fonts';
 
 export function Toolbar() {
   const [showShapeMenu, setShowShapeMenu] = useState(false);
@@ -31,7 +33,7 @@ export function Toolbar() {
       content: 'Double-click to edit',
       style: {
         fontSize: 32,
-        fontFamily: 'Arial',
+        fontFamily: DEFAULT_FONT.value,
         color: '#000000',
         align: 'left',
       },

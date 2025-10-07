@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useEditorStore } from '@/lib/state/editorStore';
 import type { Element as SlideElement } from '@deck/shared';
 import Konva from 'konva';
+import { DEFAULT_FONT } from '@/lib/utils/fonts';
 
 export function Stage() {
   const stageRef = useRef<Konva.Stage>(null);
@@ -15,7 +16,7 @@ export function Stage() {
   const [stageSize, setStageSize] = useState({ width: 1280, height: 720 });
   const [editingTextId, setEditingTextId] = useState<string | null>(null);
   const [textareaValue, setTextareaValue] = useState('');
-  const [textareaPosition, setTextareaPosition] = useState({ x: 0, y: 0, w: 0, h: 0, fontSize: 24, fontFamily: 'Arial' });
+  const [textareaPosition, setTextareaPosition] = useState({ x: 0, y: 0, w: 0, h: 0, fontSize: 24, fontFamily: DEFAULT_FONT.value });
   
   const currentSlide = useEditorStore(state => state.getCurrentSlide());
   const selectedElementId = useEditorStore(state => state.selectedElementId);
@@ -132,7 +133,7 @@ export function Stage() {
       w: element.w * scale,
       h: element.h * scale,
       fontSize: (element.style.fontSize || 24) * scale,
-      fontFamily: element.style.fontFamily || 'Arial',
+      fontFamily: element.style.fontFamily || DEFAULT_FONT.value,
     });
   };
 
@@ -303,7 +304,7 @@ function ElementRenderer({ element, isSelected, onClick, onDragEnd, onTransformE
           {...commonProps}
           text={element.content}
           fontSize={element.style.fontSize || 24}
-          fontFamily={element.style.fontFamily || 'Arial'}
+          fontFamily={element.style.fontFamily || DEFAULT_FONT.value}
           fill={element.style.color || '#000000'}
           width={element.w}
           height={element.h}

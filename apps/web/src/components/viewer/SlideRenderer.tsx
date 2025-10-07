@@ -5,6 +5,7 @@ import { useRef, useEffect, useState } from 'react';
 import type { Slide, Element as SlideElement } from '@deck/shared';
 import { getTransitionConfig } from '@/lib/render/transitions';
 import { VideoPlayer } from './VideoPlayer';
+import { DEFAULT_FONT } from '@/lib/utils/fonts';
 
 // GUARDRAIL: Use only transform/opacity (GPU accelerated)
 
@@ -236,7 +237,7 @@ function ElementRenderer({ element, index, step, onVideoEnd }: ElementRendererPr
           style={{
             ...style,
             ...element.style,
-            fontFamily: element.style.fontFamily || 'Arial',
+            fontFamily: element.style.fontFamily || DEFAULT_FONT.value,
             color: element.style.color || '#000',
             fontSize: `${element.style.fontSize || 24}px`,
             fontWeight: element.style.fontWeight || 400,

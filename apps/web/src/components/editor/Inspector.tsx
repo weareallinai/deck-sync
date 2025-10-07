@@ -3,6 +3,7 @@
 import { useEditorStore } from '@/lib/state/editorStore';
 import { Button } from '@deck/ui';
 import type { Background } from '@deck/shared';
+import { AVAILABLE_FONTS, DEFAULT_FONT } from '@/lib/utils/fonts';
 
 export function Inspector() {
   const selectedElement = useEditorStore(state => state.getSelectedElement());
@@ -132,19 +133,20 @@ export function Inspector() {
             <div>
               <label className="text-xs text-gray-900 dark:text-gray-900 font-medium">Font Family</label>
               <select
-                value={selectedElement.style.fontFamily || 'Arial'}
+                value={selectedElement.style.fontFamily || DEFAULT_FONT.value}
                 onChange={(e) => handleUpdateAndSave({ style: { ...selectedElement.style, fontFamily: e.target.value } })}
                 className="w-full px-2 py-1 text-sm text-gray-900 dark:text-gray-900 border rounded bg-white"
+                style={{ fontFamily: selectedElement.style.fontFamily || DEFAULT_FONT.value }}
               >
-                <option value="Arial">Arial</option>
-                <option value="Helvetica">Helvetica</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Courier New">Courier New</option>
-                <option value="Verdana">Verdana</option>
-                <option value="Trebuchet MS">Trebuchet MS</option>
-                <option value="Comic Sans MS">Comic Sans MS</option>
-                <option value="Impact">Impact</option>
+                {AVAILABLE_FONTS.map((font) => (
+                  <option 
+                    key={font.value} 
+                    value={font.value}
+                    style={{ fontFamily: font.value }}
+                  >
+                    {font.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
