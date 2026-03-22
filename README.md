@@ -6,7 +6,7 @@ Real-time synchronized slide deck presentations. Replace meeting-platform video 
 
 - 🎯 **Real-time Synchronization** - All viewers stay in perfect lockstep
 - ⏱️ **Clock Sync** - NTP-style synchronization for deterministic rendering
-- 🎬 **Rich Slides** - Text, shapes, images, and video with smooth animations
+- 🎬 **Rich Slides** - Text, shapes, images, and video play with native, local animations
 - 🔄 **Auto Reconnect** - Exponential backoff with state recovery
 - 📹 **Video Support** - MP4 playback with after-media auto-advance
 - 🎨 **Beautiful UI** - Framer Motion animations, GPU-accelerated
